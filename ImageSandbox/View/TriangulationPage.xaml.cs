@@ -343,6 +343,7 @@ namespace GroupCStegafy.View
         private void SourceImage_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
             this.setTextHoverColor(this.sourceImageTextBlock);
+
         }
 
         private void SourceImage_PointerExited(object sender, PointerRoutedEventArgs e)

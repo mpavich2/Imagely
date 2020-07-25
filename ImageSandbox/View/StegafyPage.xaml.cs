@@ -68,6 +68,8 @@ namespace GroupCStegafy.View
                 this.sourceTextBlock, this.hiddenTextBlock, this.embeddedTextBlock, this.extractedTextBlock
             };
             this.navigationView.SelectedItem = this.navigationView.MenuItems[2];
+            this.hiddenTextBox.AddHandler(TappedEvent, new TappedEventHandler(this.HiddenTextBox_Tapped), true);
+            this.extractedTextBox.AddHandler(TappedEvent, new TappedEventHandler(this.ExtractedTextBox_Tapped), true);
         }
 
         #endregion
@@ -115,7 +117,8 @@ namespace GroupCStegafy.View
                 this.showDropArea();
                 this.changeDragAndDropTextBlock(DropHiddenFileTextDisplay);
             }
-            else if (fileType == FileType.Picture && this.sourceImage.Source != null && await this.openDraggedHiddenImage(dragEvent))
+            else if (fileType == FileType.Picture && this.sourceImage.Source != null &&
+                     await this.openDraggedHiddenImage(dragEvent))
             {
                 this.updateRecentImageTextColor(this.hiddenTextBlock);
                 this.hideDropAreaRectangle();
@@ -171,9 +174,10 @@ namespace GroupCStegafy.View
                 this.viewModel.SetEncryptionType(EncryptionType.Unencrypted);
                 this.determineSettingsToDisplay();
             }
+
             //TODO hook this up to do it when encryption type changed
         }
-        
+
         private void EncryptedRadioButton_Checked(object sender, RoutedEventArgs e)
         {
             if (this.viewModel != null)
@@ -181,6 +185,7 @@ namespace GroupCStegafy.View
                 this.viewModel.SetEncryptionType(EncryptionType.Encrypted);
                 this.determineSettingsToDisplay();
             }
+
             //TODO hook this up to do it when encryption type changed
         }
 
@@ -188,8 +193,10 @@ namespace GroupCStegafy.View
         {
             if (this.viewModel != null)
             {
+                this.updateRecentImageTextColor(this.extractedTextBlock);
                 if (this.HiddenFileType == FileType.Text)
                 {
+                    this.switchRecentDisplayToText();
                     this.recentTextBox.Text = this.ExtractedText;
                     this.extractedTextBox.Text = this.ExtractedText;
                 }
@@ -197,10 +204,13 @@ namespace GroupCStegafy.View
                 {
                     using (var writeStream = this.ExtractedPicture.ModifiedImage.PixelBuffer.AsStream())
                     {
-                        await writeStream.WriteAsync(this.ExtractedPicture.Pixels, 0, this.ExtractedPicture.Pixels.Length);
+                        await writeStream.WriteAsync(this.ExtractedPicture.Pixels, 0,
+                            this.ExtractedPicture.Pixels.Length);
                         this.extractedImage.Source = this.ExtractedPicture.ModifiedImage;
                     }
+
                     this.recentImage.Source = this.ExtractedPicture.ModifiedImage;
+                    this.switchRecentDisplayToImage();
                 }
             }
         }
@@ -209,9 +219,11 @@ namespace GroupCStegafy.View
         {
             if (this.viewModel != null)
             {
+                this.updateRecentImageTextColor(this.extractedTextBlock);
                 if (this.HiddenFileType == FileType.Text)
                 {
                     this.viewModel.DecryptText();
+                    this.switchRecentDisplayToText();
                     this.recentTextBox.Text = this.DecryptedText;
                     this.extractedTextBox.Text = this.DecryptedText;
                 }
@@ -220,10 +232,13 @@ namespace GroupCStegafy.View
                     this.viewModel.DecryptImage();
                     using (var writeStream = this.DecryptedPicture.ModifiedImage.PixelBuffer.AsStream())
                     {
-                        await writeStream.WriteAsync(this.DecryptedPicture.Pixels, 0, this.DecryptedPicture.Pixels.Length);
+                        await writeStream.WriteAsync(this.DecryptedPicture.Pixels, 0,
+                            this.DecryptedPicture.Pixels.Length);
                         this.extractedImage.Source = this.DecryptedPicture.ModifiedImage;
                     }
+
                     this.recentImage.Source = this.DecryptedPicture.ModifiedImage;
+                    this.switchRecentDisplayToImage();
                 }
             }
         }
@@ -315,9 +330,10 @@ namespace GroupCStegafy.View
                 {
                     if (this.HiddenFileType == FileType.Text)
                     {
-                        this.switchToTextMode();
                         this.hiddenTextBox.Text = this.HiddenText;
                         this.recentTextBox.Text = this.HiddenText;
+                        this.switchToTextMode();
+                        this.showTextOverlays();
                         return true;
                     }
 
@@ -329,9 +345,11 @@ namespace GroupCStegafy.View
 
                     this.recentImage.Source = this.HiddenPicture.ModifiedImage;
                     this.switchToImageMode();
+                    this.hideTextOverlays();
 
                     return true;
                 }
+
                 return false;
             }
             catch
@@ -365,6 +383,7 @@ namespace GroupCStegafy.View
 
                 this.recentImage.Source = this.HiddenPicture.ModifiedImage;
                 this.switchToImageMode();
+                this.hideTextOverlays();
                 return true;
             }
 
@@ -377,6 +396,7 @@ namespace GroupCStegafy.View
             this.hiddenTextBox.Text = this.HiddenText;
             this.recentTextBox.Text = this.HiddenText;
             this.switchToTextMode();
+            this.showTextOverlays();
         }
 
         private void updateRecentImageTextColor(TextBlock textBlock)
@@ -424,10 +444,9 @@ namespace GroupCStegafy.View
             this.hiddenTextBox.Visibility = Visibility.Visible;
             this.extractedImage.Visibility = Visibility.Collapsed;
             this.extractedTextBox.Visibility = Visibility.Visible;
-            this.recentImage.Visibility = Visibility.Collapsed;
-            this.recentTextBox.Visibility = Visibility.Visible;
             this.encryptedTextRadioButton.Content = EncryptedTextDisplay;
             this.decryptedTextRadioButton.Content = DecryptedTextDisplay;
+            this.switchRecentDisplayToText();
             this.changeHiddenTextBlock(HiddenTextDisplay);
             this.changeExtractedTextBlock(ExtractedTextDisplay);
         }
@@ -438,10 +457,9 @@ namespace GroupCStegafy.View
             this.hiddenTextBox.Visibility = Visibility.Collapsed;
             this.extractedImage.Visibility = Visibility.Visible;
             this.extractedTextBox.Visibility = Visibility.Collapsed;
-            this.recentImage.Visibility = Visibility.Visible;
-            this.recentTextBox.Visibility = Visibility.Collapsed;
             this.encryptedTextRadioButton.Content = EncryptedImageTextDisplay;
             this.decryptedTextRadioButton.Content = DecryptedImageTextDisplay;
+            this.switchRecentDisplayToImage();
             this.changeHiddenTextBlock(HiddenImageDisplay);
             this.changeExtractedTextBlock(ExtractedImageDisplay);
         }
@@ -456,6 +474,18 @@ namespace GroupCStegafy.View
         {
             this.recentImage.Visibility = Visibility.Collapsed;
             this.recentTextBox.Visibility = Visibility.Visible;
+        }
+
+        private void showTextOverlays()
+        {
+            this.hiddenTextOverlay.Visibility = Visibility.Visible;
+            this.extractedTextOverlay.Visibility = Visibility.Visible;
+        }
+
+        private void hideTextOverlays()
+        {
+            this.hiddenTextOverlay.Visibility = Visibility.Collapsed;
+            this.extractedTextOverlay.Visibility = Visibility.Collapsed;
         }
 
         private void changeHiddenTextBlock(string text)
@@ -611,6 +641,175 @@ namespace GroupCStegafy.View
         {
             this.encryptedTextRadioButton.Visibility = Visibility.Collapsed;
             this.decryptedTextRadioButton.Visibility = Visibility.Collapsed;
+        }
+
+        private void resetTextHoverColor()
+        {
+            this.resetTextBlocksColor();
+            switch (this.recentImageType)
+            {
+                case ImageType.SourceImage:
+                    this.updateRecentImageTextColor(this.sourceTextBlock);
+                    break;
+                case ImageType.HiddenImage:
+                    this.updateRecentImageTextColor(this.hiddenTextBlock);
+                    break;
+                case ImageType.EmbeddedImage:
+                    this.updateRecentImageTextColor(this.embeddedTextBlock);
+                    break;
+                case ImageType.ExtractedImage:
+                    this.updateRecentImageTextColor(this.extractedTextBlock);
+                    break;
+                default:
+                    this.resetTextBlocksColor();
+                    break;
+            }
+        }
+
+        private void setTextHoverColor(TextBlock textBlock)
+        {
+            textBlock.Foreground = (Brush) Application.Current.Resources["HoverTextColor"];
+        }
+
+        private void setRecentImageAsSelectedImage(object sender)
+        {
+            var image = sender as Image;
+            this.recentImage.Source = image?.Source;
+        }
+
+        private void setRecentTextAsSelectedText(TextBox textBox)
+        {
+            this.recentTextBox.Text = textBox.Text;
+        }
+
+        private bool isExtractedTextBoxVisible()
+        {
+            return this.extractedTextBox.Visibility == Visibility.Visible && this.extractedTextBox.Text != string.Empty;
+        }
+
+        private bool isHiddenTextBoxVisible()
+        {
+            return this.hiddenTextBox.Visibility == Visibility.Visible && this.hiddenTextBox.Text != string.Empty;
+        }
+
+        private void SourceImage_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            this.setTextHoverColor(this.sourceTextBlock);
+        }
+
+        private void SourceImage_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            this.resetTextHoverColor();
+        }
+
+        private void SourceImage_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            this.switchRecentDisplayToImage();
+            this.setRecentImageAsSelectedImage(sender);
+            this.updateRecentImageTextColor(this.sourceTextBlock);
+        }
+
+        private void HiddenImage_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            this.setTextHoverColor(this.hiddenTextBlock);
+        }
+
+        private void HiddenImage_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            this.resetTextHoverColor();
+        }
+
+        private void HiddenImage_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            this.switchRecentDisplayToImage();
+            this.setRecentImageAsSelectedImage(sender);
+            this.updateRecentImageTextColor(this.hiddenTextBlock);
+        }
+
+        private void EmbeddedImage_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            this.setTextHoverColor(this.embeddedTextBlock);
+        }
+
+        private void EmbeddedImage_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            this.resetTextHoverColor();
+        }
+
+        private void EmbeddedImage_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            this.switchRecentDisplayToImage();
+            this.setRecentImageAsSelectedImage(sender);
+            this.updateRecentImageTextColor(this.embeddedTextBlock);
+        }
+
+        private void ExtractedImage_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            this.setTextHoverColor(this.extractedTextBlock);
+        }
+
+        private void ExtractedImage_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            this.resetTextHoverColor();
+        }
+
+        private void ExtractedImage_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            this.switchRecentDisplayToImage();
+            this.setRecentImageAsSelectedImage(sender);
+            this.updateRecentImageTextColor(this.extractedTextBlock);
+        }
+
+        private void HiddenTextBox_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (this.isHiddenTextBoxVisible())
+            {
+                this.switchRecentDisplayToText();
+                this.setRecentTextAsSelectedText(this.hiddenTextBox);
+                this.updateRecentImageTextColor(this.hiddenTextBlock);
+            }
+        }
+
+        private void HiddenTextBox_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            if (this.isHiddenTextBoxVisible())
+            {
+                this.setTextHoverColor(this.hiddenTextBlock);
+            }
+        }
+
+        private void HiddenTextBox_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            if (this.isHiddenTextBoxVisible())
+            {
+                this.resetTextHoverColor();
+            }
+        }
+
+        private void ExtractedTextBox_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (this.isExtractedTextBoxVisible())
+            {
+                this.switchRecentDisplayToText();
+                this.setRecentTextAsSelectedText(this.extractedTextBox);
+                this.updateRecentImageTextColor(this.extractedTextBlock);
+            }
+        }
+
+        private void ExtractedTextBox_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            if (this.isExtractedTextBoxVisible())
+            {
+                this.setTextHoverColor(this.extractedTextBlock);
+            }
+        }
+
+        private void ExtractedTextBox_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            if (this.isExtractedTextBoxVisible())
+            {
+                this.resetTextHoverColor();
+            }
         }
 
         private void Home_Tapped(object sender, TappedRoutedEventArgs e)

@@ -39,9 +39,12 @@ namespace GroupCStegafy.Model.Filters
         /// </summary>
         public void applySobelFilter()
         {
-            var gx = new[,] {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
-            var gy = new[,] {{1, 2, 1}, {0, 0, 0}, {-1, -2, -1}};
-
+            var gx = new[,] {{-1, 0, 1}, 
+                             {-2, 0, 2}, 
+                             {-1, 0, 1}};
+            var gy = new[,] {{1, 2, 1}, 
+                             {0, 0, 0}, 
+                             {-1, -2, -1}};
             var allPixR = new int[this.sourcePicture.Width, this.sourcePicture.Height];
             var allPixG = new int[this.sourcePicture.Width, this.sourcePicture.Height];
             var allPixB = new int[this.sourcePicture.Width, this.sourcePicture.Height];
