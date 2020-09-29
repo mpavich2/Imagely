@@ -53,7 +53,7 @@
         <SymbolIcon x:Name="clearSymbol" Symbol="Clear" Height="20" Width="20" Margin="1504,832,396,156" Foreground="{StaticResource SymbolColor}" Tapped="ClearSymbol_Tapped" Visibility="Collapsed" VerticalAlignment="Top" HorizontalAlignment="Left" PointerEntered="ClearSymbol_PointerEntered" PointerExited="ClearSymbol_PointerExited"/>
         <TextBlock HorizontalAlignment="Left" Margin="78,-7,0,0" Text="Imagely" FontFamily="{StaticResource TahomaFont}" FontSize="40" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top"/>
 
-        <NavigationView x:Name="navigationView" IsBackButtonVisible="Collapsed" Loaded="NavigationView_Loaded" Visibility="Collapsed">
+        <NavigationView x:Name="navigationView" IsBackButtonVisible="Collapsed" Loaded="NavigationView_Loaded">
             <NavigationView.MenuItems>
                 <NavigationViewItem Icon="Pictures" Content="Home" Tapped="Home_Tapped" />
                 <NavigationViewItem Icon="Pictures" Content="Image Triangulation Art" Tapped="ImageTriangulationArt_Tapped" />

@@ -50,6 +50,7 @@ namespace GroupCStegafy.Utils
             };
             openPicker.FileTypeFilter.Add(".txt");
             var file = await openPicker.PickSingleFileAsync();
+
             return file;
         }
 

@@ -152,12 +152,18 @@ namespace GroupCStegafy.Viewmodel
         #region Methods
 
         /// <summary>
-        ///     Opens the source image.
+        /// Opens the source image.
         /// </summary>
-        public async Task OpenSourceImage()
+        /// <returns>
+        /// true if file opened, false otherwise
+        /// </returns>
+        public async Task<bool> OpenSourceImage()
         {
             var sourceImageFile = await FileUtilities.SelectFile();
-
+            if (!await this.isFileValid(sourceImageFile))
+            {
+                return false;
+            }
             var copyBitmapImage = await FileUtilities.MakeCopyOfTheImage(sourceImageFile);
 
             using (var fileStream = await sourceImageFile.OpenAsync(FileAccessMode.Read))
@@ -186,6 +192,8 @@ namespace GroupCStegafy.Viewmodel
                 this.SourcePicture.Width = decoder.PixelWidth;
                 this.SourcePicture.Height = decoder.PixelHeight;
             }
+
+            return true;
         }
 
         /// <summary>
@@ -195,6 +203,10 @@ namespace GroupCStegafy.Viewmodel
         {
             var value = true;
             var hiddenFile = await FileUtilities.SelectFile();
+            if (!await this.isFileValid(hiddenFile))
+            {
+                return false;
+            }
             if (this.checkFileType(hiddenFile) == FileType.Picture)
             {
                 value = await this.openHiddenImage(hiddenFile);
@@ -214,7 +226,7 @@ namespace GroupCStegafy.Viewmodel
         /// </summary>
         /// <param name="dragEvent">The <see cref="DragEventArgs" /> instance containing the event data.</param>
         /// <param name="picture">The picture.</param>
-        public async Task<bool> openDraggedFile(DragEventArgs dragEvent, Picture picture)
+        public async Task<bool> OpenDraggedFile(DragEventArgs dragEvent, Picture picture)
         {
             return await this.openDraggedImage(dragEvent, picture);
         }
@@ -429,6 +441,17 @@ namespace GroupCStegafy.Viewmodel
             return true;
         }
 
+        private async Task<bool> isFileValid(StorageFile file)
+        {
+            if (file == null)
+            {
+                await this.showInvalidFileDialog();
+                return false;
+            }
+
+            return true;
+        }
+
         private async Task<bool> isTextFileTooBig()
         {
             var textArray = this.HiddenText.StringToBitArray();
@@ -525,6 +548,12 @@ namespace GroupCStegafy.Viewmodel
         private async Task showInvalidHiddenImageDialog()
         {
             var dialog = new InvalidHiddenImageDialog();
+            await dialog.ShowAsync();
+        }
+
+        private async Task showInvalidFileDialog()
+        {
+            var dialog = new InvalidFileDialog();
             await dialog.ShowAsync();
         }
 

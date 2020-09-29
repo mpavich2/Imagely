@@ -1,6 +1,8 @@
 ﻿using System;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.Foundation;
+using Windows.Graphics.Display;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -39,6 +41,7 @@ namespace GroupCStegafy
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
             var rootFrame = Window.Current.Content as Frame;
+            this.MaximizeWindowOnLoad();
 
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
@@ -71,6 +74,17 @@ namespace GroupCStegafy
                 // Ensure the current window is active
                 Window.Current.Activate();
             }
+        }
+
+        private void MaximizeWindowOnLoad()
+        {
+            var view = DisplayInformation.GetForCurrentView();
+            var resolution = new Size(view.ScreenWidthInRawPixels, view.ScreenHeightInRawPixels);
+            var scale = view.ResolutionScale == ResolutionScale.Invalid ? 1 : view.RawPixelsPerViewPixel;
+            var bounds = new Size(resolution.Width / scale, resolution.Height / scale);
+
+            ApplicationView.PreferredLaunchViewSize = new Size(bounds.Width, bounds.Height);
+            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
         }
 
         /// <summary>

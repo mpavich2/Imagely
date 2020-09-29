@@ -146,6 +146,9 @@
     <Compile Include="Viewmodel\MainPageViewModel.cs" />
     <Compile Include="Viewmodel\StegafyPageViewModel.cs" />
     <Compile Include="Viewmodel\TriangulationPageViewModel.cs" />
+    <Compile Include="View\Dialogs\InvalidFileDialog.xaml.cs">
+      <DependentUpon>InvalidFileDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Dialogs\InvalidHiddenImageDialog.xaml.cs">
       <DependentUpon>InvalidHiddenImageDialog.xaml</DependentUpon>
     </Compile>
@@ -248,6 +251,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="View\Dialogs\InvalidFileDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Dialogs\InvalidHiddenImageDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

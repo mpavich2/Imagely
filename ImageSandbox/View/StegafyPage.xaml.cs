@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices.WindowsRuntime;
+﻿using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml;
@@ -21,7 +22,6 @@ namespace GroupCStegafy.View
     {
         #region Data members
 
-        private const string DropSourceFileTextDisplay = "Drag and Drop Image Here";
         private const string DropHiddenFileTextDisplay = "Drag and Drop Image or Text Here";
         private const string HiddenTextDisplay = "Hidden Text";
         private const string HiddenImageDisplay = "Hidden Image";
@@ -303,10 +303,8 @@ namespace GroupCStegafy.View
 
         private async Task<bool> openSourcePicture()
         {
-            try
+            if (await this.viewModel.OpenSourceImage())
             {
-                await this.viewModel.OpenSourceImage();
-
                 using (var writeStream = this.SourcePicture.ModifiedImage.PixelBuffer.AsStream())
                 {
                     await writeStream.WriteAsync(this.SourcePicture.Pixels, 0, this.SourcePicture.Pixels.Length);
@@ -316,51 +314,42 @@ namespace GroupCStegafy.View
                 this.recentImage.Source = this.SourcePicture.ModifiedImage;
                 return true;
             }
-            catch
-            {
-                return false;
-            }
+
+            return false;
         }
 
         private async Task<bool> openHiddenPicture()
         {
-            try
+            if (await this.viewModel.OpenHiddenFile())
             {
-                if (await this.viewModel.OpenHiddenFile())
+                if (this.HiddenFileType == FileType.Text)
                 {
-                    if (this.HiddenFileType == FileType.Text)
-                    {
-                        this.hiddenTextBox.Text = this.HiddenText;
-                        this.recentTextBox.Text = this.HiddenText;
-                        this.switchToTextMode();
-                        this.showTextOverlays();
-                        return true;
-                    }
-
-                    using (var writeStream = this.HiddenPicture.ModifiedImage.PixelBuffer.AsStream())
-                    {
-                        await writeStream.WriteAsync(this.HiddenPicture.Pixels, 0, this.HiddenPicture.Pixels.Length);
-                        this.hiddenImage.Source = this.HiddenPicture.ModifiedImage;
-                    }
-
-                    this.recentImage.Source = this.HiddenPicture.ModifiedImage;
-                    this.switchToImageMode();
-                    this.hideTextOverlays();
-
+                    this.hiddenTextBox.Text = this.HiddenText;
+                    this.recentTextBox.Text = this.HiddenText;
+                    this.switchToTextMode();
+                    this.showTextOverlays();
                     return true;
                 }
 
-                return false;
+                using (var writeStream = this.HiddenPicture.ModifiedImage.PixelBuffer.AsStream())
+                {
+                    await writeStream.WriteAsync(this.HiddenPicture.Pixels, 0, this.HiddenPicture.Pixels.Length);
+                    this.hiddenImage.Source = this.HiddenPicture.ModifiedImage;
+                }
+
+                this.recentImage.Source = this.HiddenPicture.ModifiedImage;
+                this.switchToImageMode();
+                this.hideTextOverlays();
+
+                return true;
             }
-            catch
-            {
-                return false;
-            }
+
+            return false;
         }
 
         private async Task openDraggedSourceImage(DragEventArgs dragEvent)
         {
-            await this.viewModel.openDraggedFile(dragEvent, this.SourcePicture);
+            await this.viewModel.OpenDraggedFile(dragEvent, this.SourcePicture);
 
             using (var writeStream = this.SourcePicture.ModifiedImage.PixelBuffer.AsStream())
             {
@@ -373,7 +362,7 @@ namespace GroupCStegafy.View
 
         private async Task<bool> openDraggedHiddenImage(DragEventArgs dragEvent)
         {
-            if (await this.viewModel.openDraggedFile(dragEvent, this.HiddenPicture))
+            if (await this.viewModel.OpenDraggedFile(dragEvent, this.HiddenPicture))
             {
                 using (var writeStream = this.HiddenPicture.ModifiedImage.PixelBuffer.AsStream())
                 {

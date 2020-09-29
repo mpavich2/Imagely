@@ -45,7 +45,7 @@
         </Border>
         <Border BorderThickness="1" BorderBrush="{StaticResource BorderColor}" HorizontalAlignment="Left" VerticalAlignment="Top"
                 Margin="78,46,0,0">
-            <TextBox x:Name="recentTextBox" BorderBrush="Transparent" Height="736" Width="1450" Background="#FF272B2F" Visibility="Collapsed" IsReadOnly="True" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+            <TextBox x:Name="recentTextBox" BorderBrush="Transparent" Height="736" Width="1450" Background="#FF272B2F" Visibility="Collapsed" IsReadOnly="True" TextWrapping="Wrap" />
         </Border>
         <Border BorderThickness="1" BorderBrush="{StaticResource BorderColor}" HorizontalAlignment="Left" VerticalAlignment="Top"
                 Margin="78,826,0,0">
@@ -63,7 +63,7 @@
         <TextBlock x:Name="chooseKeywordTextBlock" HorizontalAlignment="Left" Margin="1021,864,0,0" Text="Choose Encryption Keyword" FontFamily="{StaticResource TahomaFont}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top" Visibility="Collapsed"/>
         <Slider x:Name="bpccSlider" HorizontalAlignment="Left" Margin="288,898,0,0" VerticalAlignment="Top" Width="150" Maximum="8" Value="1" Minimum="1" TickPlacement="None" IsThumbToolTipEnabled="False" ValueChanged="BpccSlider_ValueChanged" Visibility="Collapsed"/>
         <TextBlock x:Name="bpccValueTextBlock" HorizontalAlignment="Left" Margin="452,899,0,0" Text="{Binding ElementName=bpccSlider,Path=Value}" FontFamily="{StaticResource TahomaFont}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top" Visibility="Collapsed"/>
-        <TextBox x:Name="keywordTextBox" BorderThickness="1" HorizontalAlignment="Left" Margin="1101,898,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" Width="150" PlaceholderText="Enter Keyword" Visibility="Visible"/>
+        <TextBox x:Name="keywordTextBox" BorderThickness="1" HorizontalAlignment="Left" Margin="1101,898,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" Width="150" PlaceholderText="Enter Keyword" Visibility="Collapsed"/>
         <Button x:Name="extractButton" Content="Extract Image" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="741,911,0,0" VerticalAlignment="Top" Width="127" Visibility="Collapsed" Click="ExtractButton_Click"/>
         <RadioButton x:Name="encryptedTextRadioButton" Content="Encrypted Text" Margin="744,895,0,0" VerticalAlignment="Top" Checked="EncryptedTextRadioButton_Checked" GroupName="extractedTextRadioButtons" Width="155" Visibility="Collapsed" IsChecked="True"/>
         <RadioButton x:Name="decryptedTextRadioButton" Content="Decrypted Text" Margin="744,927,0,0" VerticalAlignment="Top" GroupName="extractedTextRadioButtons" Checked="DecryptedTextRadioButton_Checked" Visibility="Collapsed"/>
