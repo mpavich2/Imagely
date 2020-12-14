@@ -65,6 +65,38 @@ namespace GroupCStegafy.Constants
         /// </value>
         public static int SecondX => (int) Application.Current.Resources["SecondX"];
 
+        /// <summary>
+        ///     Gets the hidden message value.
+        /// </summary>
+        /// <value>
+        ///     The hidden message value.
+        /// </value>
+        public static int HiddenMessageValue => (int) Application.Current.Resources["HiddenMessageValue"];
+
+        /// <summary>
+        ///     Gets the ASCII value of a.
+        /// </summary>
+        /// <value>
+        ///     The ASCII value of a.
+        /// </value>
+        public static int AsciiValueOfA => (int) Application.Current.Resources["AsciiValueOfA"];
+
+        /// <summary>
+        ///     Gets the length of the alphabet.
+        /// </summary>
+        /// <value>
+        ///     The length of the alphabet.
+        /// </value>
+        public static int AlphabetLength => (int) Application.Current.Resources["AlphabetLength"];
+
+        /// <summary>
+        /// Gets the color channel count.
+        /// </summary>
+        /// <value>
+        /// The color channel count.
+        /// </value>
+        public static int ColorChannelCount => (int) Application.Current.Resources["ColorChannelCount"];
+
         #endregion
     }
 }

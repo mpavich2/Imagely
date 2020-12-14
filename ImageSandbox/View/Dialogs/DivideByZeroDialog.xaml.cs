@@ -6,17 +6,19 @@ using Windows.UI.Xaml.Controls;
 namespace GroupCStegafy.View.Dialogs
 {
     /// <summary>
-    ///     Defines the invalid file dialog content dialog.
+    ///     The divide by zero content dialog to display an error message.
     /// </summary>
     /// <seealso cref="Windows.UI.Xaml.Controls.ContentDialog" />
-    public sealed partial class InvalidFileDialog : ContentDialog
+    /// <seealso cref="Windows.UI.Xaml.Markup.IComponentConnector" />
+    /// <seealso cref="Windows.UI.Xaml.Markup.IComponentConnector2" />
+    public sealed partial class DivideByZeroDialog : ContentDialog
     {
         #region Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="InvalidFileDialog" /> class.
+        ///     Initializes a new instance of the <see cref="DivideByZeroDialog" /> class.
         /// </summary>
-        public InvalidFileDialog()
+        public DivideByZeroDialog()
         {
             this.InitializeComponent();
         }
@@ -27,7 +29,7 @@ namespace GroupCStegafy.View.Dialogs
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            this.Hide();
+            Hide();
         }
 
         #endregion

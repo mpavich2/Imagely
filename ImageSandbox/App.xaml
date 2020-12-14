@@ -13,6 +13,8 @@
             <x:Int32 x:Key="MinRgbValue">0</x:Int32>
             <x:Int32 x:Key="FirstX">0</x:Int32>
             <x:Int32 x:Key="SecondX">1</x:Int32>
+            <x:Int32 x:Key="ColorChannelCount">3</x:Int32>
+            <x:Int32 x:Key="HiddenMessageValue">212</x:Int32>
             <SolidColorBrush x:Key="ButtonBackgroundPointerOver">#FF7597</SolidColorBrush>
             <SolidColorBrush x:Key="ButtonBackground">#FF0266</SolidColorBrush>
             <SolidColorBrush x:Key="ButtonBackgroundPressed">#e78595</SolidColorBrush>

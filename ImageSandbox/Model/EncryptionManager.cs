@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using Windows.UI;
+using GroupCStegafy.Constants;
 using GroupCStegafy.Utils;
 
 namespace GroupCStegafy.Model
@@ -10,6 +11,12 @@ namespace GroupCStegafy.Model
     /// </summary>
     public class EncryptionManager
     {
+        #region Data members
+
+        private const string KEY_END = "#KEY#";
+
+        #endregion
+
         #region Methods
 
         /// <summary>
@@ -36,7 +43,7 @@ namespace GroupCStegafy.Model
             encryptLetter(text, messageTextBytes, keywordTextBytes, encryptedText);
 
             var finalMessage = Encoding.ASCII.GetString(encryptedText);
-            return keyword + "#KEY#" + finalMessage;
+            return keyword + KEY_END + finalMessage;
         }
 
         /// <summary>
@@ -77,10 +84,11 @@ namespace GroupCStegafy.Model
         {
             for (var i = 0; i < text.Length; i++)
             {
-                var messageTextChar = (byte)(messageTextBytes[i] - 65);
-                var keywordTextChar = (byte)(keywordTextBytes[i] - 65);
+                var messageTextChar = (byte) (messageTextBytes[i] - ImageConstants.AsciiValueOfA);
+                var keywordTextChar = (byte) (keywordTextBytes[i] - ImageConstants.AsciiValueOfA);
 
-                encryptedText[i] = (byte)((messageTextChar + keywordTextChar) % 26 + 65);
+                encryptedText[i] = (byte) ((messageTextChar + keywordTextChar) % ImageConstants.AlphabetLength +
+                                           ImageConstants.AsciiValueOfA);
             }
         }
 
@@ -100,7 +108,7 @@ namespace GroupCStegafy.Model
 
         private static void embedBlackPixel(byte[] pixels, Color sourcePixelColor, int i, int j, Picture sourcePicture)
         {
-            sourcePixelColor.B = (byte)(sourcePixelColor.B & ~1);
+            sourcePixelColor.B = (byte) (sourcePixelColor.B & ~1);
             PixelManager.SetPixelBgra8(pixels, i, j, sourcePixelColor,
                 sourcePicture.Width, sourcePicture.Height);
         }
@@ -110,7 +118,7 @@ namespace GroupCStegafy.Model
         {
             if (i <= sourcePicture.VerticalCenter)
             {
-                var swappedYValue = (int)(i + sourcePicture.VerticalCenter);
+                var swappedYValue = (int) (i + sourcePicture.VerticalCenter);
                 if (swappedYValue < hiddenPicture.Height && j < hiddenPicture.Width)
                 {
                     hiddenPixelColor = PixelManager.GetPixelBgra8(hiddenPicture.Pixels, swappedYValue, j,
@@ -120,7 +128,7 @@ namespace GroupCStegafy.Model
 
             else
             {
-                var swappedYValue = (int)(i - sourcePicture.VerticalCenter);
+                var swappedYValue = (int) (i - sourcePicture.VerticalCenter);
                 if (swappedYValue < hiddenPicture.Height && j < hiddenPicture.Width)
                 {
                     hiddenPixelColor = PixelManager.GetPixelBgra8(hiddenPicture.Pixels, swappedYValue, j,

@@ -56,6 +56,10 @@ namespace GroupCStegafy.Model.DelaunayTriangulation
             //}
             //TODO add error handling for when not enough white points
             var whitePoints = this.findAllWhitePoints(sourcePicture).ToList();
+            if (amount > whitePoints.Count)
+            {
+                throw new Exception("Amount of points cannot exceed the number of available points for triangles.");
+            }
             for (var i = 0; i < amount - 4; i++)
             {
                 var randomIndex = random.Next(whitePoints.Count());

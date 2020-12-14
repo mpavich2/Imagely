@@ -81,7 +81,7 @@ namespace GroupCStegafy.Model
         public byte[] SetHeaderForHiddenMessage()
         {
             var imageWithHeader = this.sourcePicture.Pixels;
-            for (var i = 0; i < 2; i++)
+            for (var i = 0; i <= ImageConstants.SecondX; i++)
             {
                 var pixelColor = PixelManager.GetPixelBgra8(imageWithHeader, ImageConstants.FirstX, i,
                     this.sourcePicture.Width,
@@ -111,10 +111,10 @@ namespace GroupCStegafy.Model
         {
             switch (height)
             {
-                case 0 when width == 0:
+                case 0 when width == ImageConstants.FirstX:
                     width += 2;
                     break;
-                case 0 when width == 1:
+                case 0 when width == ImageConstants.SecondX:
                     width++;
                     break;
             }
@@ -131,14 +131,12 @@ namespace GroupCStegafy.Model
         /// </returns>
         public static EncryptionType CheckForEncryption(Color pixelColor)
         {
-            if (PixelManager.GetLeastSignificantBit(pixelColor.R) != 0)
+            if (PixelManager.GetLeastSignificantBit(pixelColor.R) != ImageConstants.MinRgbValue)
             {
                 return EncryptionType.Encrypted;
             }
-            else
-            {
-                return EncryptionType.Unencrypted;
-            }
+
+            return EncryptionType.Unencrypted;
         }
 
         /// <summary>
@@ -162,7 +160,9 @@ namespace GroupCStegafy.Model
         /// </returns>
         public static bool ContainsHiddenMessage(Color pixelColor)
         {
-            return pixelColor.R == 212 && pixelColor.G == 212 && pixelColor.B == 212;
+            return pixelColor.R == ImageConstants.HiddenMessageValue &&
+                   pixelColor.G == ImageConstants.HiddenMessageValue &&
+                   pixelColor.B == ImageConstants.HiddenMessageValue;
         }
 
         /// <summary>
@@ -174,15 +174,15 @@ namespace GroupCStegafy.Model
         /// </returns>
         public static bool CheckFileType(Color pixelColor)
         {
-            return PixelManager.GetLeastSignificantBit(pixelColor.B) != 0;
+            return PixelManager.GetLeastSignificantBit(pixelColor.B) != ImageConstants.MinRgbValue;
         }
 
         private void setFirstPixel(Color pixelColor, byte[] imageWithHeader)
         {
             //TODO change magic numbers
-            pixelColor.R = 212;
-            pixelColor.G = 212;
-            pixelColor.B = 212;
+            pixelColor.R = (byte) ImageConstants.HiddenMessageValue;
+            pixelColor.G = (byte) ImageConstants.HiddenMessageValue;
+            pixelColor.B = (byte) ImageConstants.HiddenMessageValue;
             PixelManager.SetPixelBgra8(imageWithHeader, ImageConstants.FirstX, ImageConstants.FirstX,
                 pixelColor, this.sourcePicture.Width,
                 this.sourcePicture.Height);

@@ -16,21 +16,39 @@ namespace GroupCStegafy.Utils
     {
         #region Methods
 
-
         /// <summary>
-        /// Selects the file.
+        ///     Selects the file.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        ///     the selected file.
+        /// </returns>
         public static async Task<StorageFile> SelectFile()
         {
-            var openPicker = new FileOpenPicker
-            {
+            var openPicker = new FileOpenPicker {
                 ViewMode = PickerViewMode.Thumbnail,
                 SuggestedStartLocation = PickerLocationId.PicturesLibrary
             };
             openPicker.FileTypeFilter.Add(".png");
             openPicker.FileTypeFilter.Add(".bmp");
             openPicker.FileTypeFilter.Add(".txt");
+            var file = await openPicker.PickSingleFileAsync();
+
+            return file;
+        }
+
+        /// <summary>
+        ///     Selects the PNG file.
+        /// </summary>
+        /// <returns>
+        ///     the selected file.
+        /// </returns>
+        public static async Task<StorageFile> SelectPngFile()
+        {
+            var openPicker = new FileOpenPicker {
+                ViewMode = PickerViewMode.Thumbnail,
+                SuggestedStartLocation = PickerLocationId.PicturesLibrary
+            };
+            openPicker.FileTypeFilter.Add(".png");
             var file = await openPicker.PickSingleFileAsync();
 
             return file;

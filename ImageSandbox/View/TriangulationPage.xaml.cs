@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -61,7 +62,11 @@ namespace GroupCStegafy.View
         {
             try
             {
-                await this.viewModel.OpenSourceImage();
+                var openSuccessful = await this.viewModel.OpenSourceImage();
+                if (!openSuccessful)
+                {
+                    return false;
+                }
 
                 using (var writeStream = this.SourcePicture.ModifiedImage.PixelBuffer.AsStream())
                 {
@@ -86,11 +91,18 @@ namespace GroupCStegafy.View
                 await this.applySobelAndGrayScale();
             }
 
+            this.setCanvasBoundary();
             this.triangulationCanvas.Children.Clear();
             this.viewModel.DrawTriangulation(this.triangulationCanvas, this.pointsTextBox.Text);
             await this.convertCanvasToImage();
             this.triangulationCanvas.Children.Clear();
-            this.showSymbols();
+        }
+
+        private void setCanvasBoundary()
+        {
+            var height = this.ModifiedPicture.Width;
+            var width = this.ModifiedPicture.Height;
+            this.canvasBoundaryRect.Rect = new Rect(0, 0, height, width);
         }
 
         private async Task applySobelAndGrayScale()
@@ -121,16 +133,30 @@ namespace GroupCStegafy.View
 
         private async void FileDropArea_Drop(object sender, DragEventArgs dragEvent)
         {
-            await this.openImage(dragEvent);
+            if (!await this.openImage(dragEvent) && this.sourceImage.Source == null)
+            {
+                this.showDropArea();
+            }
+            else
+            {
+                this.showTriangulationUi();
+            }
+        }
+
+        private void showTriangulationUi()
+        {
+            this.hideDropArea();
             this.showDrawTriangulationButton();
             this.showReadyTextAndPointsBox();
-            this.updateRecentImageTextColor(this.sourceImageTextBlock);
             this.dropAreaRectangle.Visibility = Visibility.Collapsed;
         }
 
-        private async Task openImage(DragEventArgs dragEvent)
+        private async Task<bool> openImage(DragEventArgs dragEvent)
         {
-            await this.viewModel.OpenDraggedImage(dragEvent);
+            if (!await this.viewModel.OpenDraggedImage(dragEvent))
+            {
+                return false;
+            }
 
             using (var writeStream = this.SourcePicture.ModifiedImage.PixelBuffer.AsStream())
             {
@@ -139,6 +165,7 @@ namespace GroupCStegafy.View
             }
 
             this.recentImage.Source = this.SourcePicture.ModifiedImage;
+            return true;
         }
 
         private void FileDropArea_DragLeave(object sender, DragEventArgs e)
@@ -209,15 +236,11 @@ namespace GroupCStegafy.View
         {
             if (!await this.openSourcePicture() && this.sourceImage.Source == null)
             {
-                //TODO insert flyout for incorrect source image
                 this.showDropArea();
             }
             else
             {
-                this.hideDropArea();
-                this.showDrawTriangulationButton();
-                this.showReadyTextAndPointsBox();
-                this.dropAreaRectangle.Visibility = Visibility.Collapsed;
+                this.showTriangulationUi();
             }
         }
 
@@ -260,12 +283,15 @@ namespace GroupCStegafy.View
 
         private async void SaveSymbol_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            await this.viewModel.SaveImage(this.recentImage);
+            if (this.recentImage.Source != null)
+            {
+                await this.viewModel.SaveImage(this.recentImage);
+            }
         }
 
         private void ClearSymbol_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            this.viewModel.clear();
+            this.viewModel.Clear();
             this.triangulationCanvas.Children.Clear();
             this.recentImage.Source = null;
             this.sourceImage.Source = null;
@@ -279,7 +305,6 @@ namespace GroupCStegafy.View
             this.showDropArea();
             this.hideDrawTriangulationButton();
             this.hideReadyTextAndPointsBox();
-            this.hideSymbols();
             this.dropAreaRectangle.Visibility = Visibility.Visible;
             this.resetTextBlocksColor();
         }
@@ -290,18 +315,6 @@ namespace GroupCStegafy.View
             {
                 textBlock.Foreground = (Brush) Application.Current.Resources["DefaultTextColor"];
             }
-        }
-
-        private void showSymbols()
-        {
-            this.clearSymbol.Visibility = Visibility.Visible;
-            this.saveSymbol.Visibility = Visibility.Visible;
-        }
-
-        private void hideSymbols()
-        {
-            this.clearSymbol.Visibility = Visibility.Collapsed;
-            this.saveSymbol.Visibility = Visibility.Collapsed;
         }
 
         private void hideReadyTextAndPointsBox()
@@ -343,7 +356,6 @@ namespace GroupCStegafy.View
         private void SourceImage_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
             this.setTextHoverColor(this.sourceImageTextBlock);
-
         }
 
         private void SourceImage_PointerExited(object sender, PointerRoutedEventArgs e)
@@ -425,6 +437,14 @@ namespace GroupCStegafy.View
         private void NavigationView_Loaded(object sender, RoutedEventArgs e)
         {
             this.navigationView.IsPaneOpen = false;
+        }
+
+        private void navigationView_OnBackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
+        {
+            if (Frame.CanGoBack)
+            {
+                Frame.GoBack();
+            }
         }
 
         #endregion

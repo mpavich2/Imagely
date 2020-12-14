@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Navigation;
 using GroupCStegafy.Enums;
 using GroupCStegafy.Model;
 using GroupCStegafy.Viewmodel;
@@ -108,7 +109,6 @@ namespace GroupCStegafy.View
 
         private async void FileDropArea_Drop(object sender, DragEventArgs dragEvent)
         {
-            //TODO add error handling for folders, etc.
             var fileType = await this.viewModel.CheckFileType(dragEvent);
             if (fileType == FileType.Picture && this.sourceImage.Source == null)
             {
@@ -824,6 +824,106 @@ namespace GroupCStegafy.View
         private void PaintByNumberGenerator_Tapped(object sender, TappedRoutedEventArgs e)
         {
             //TODO add paint by number generator page
+        }
+
+        private async void SaveSymbol_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (this.recentImage.Source != null)
+            {
+                await this.viewModel.SaveImage(this.recentImage);
+            }
+        }
+
+        private void ClearSymbol_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            this.resetImages();
+            this.resetTextBoxes();
+            this.resetView();
+        }
+
+        private void resetTextBoxes()
+        {
+            this.extractedTextBox.Text = string.Empty;
+            this.hiddenTextBox.Text = string.Empty;
+            this.recentTextBox.Text = string.Empty;
+        }
+
+        private void resetView()
+        {
+            this.showDropArea();
+            this.hideEmbeddingView();
+            this.hideExtractingView();
+            this.hideDecryptingView();
+            this.dropAreaRectangle.Visibility = Visibility.Visible;
+            this.resetImages();
+            this.resetTextBlocksColor();
+            this.hideExtractButton();
+            this.hideBitsPerColorChannelSettings();
+            this.hideEncryptionKeywordSettings();
+            this.switchToImageMode();
+            this.switchRecentDisplayToImage();
+        }
+
+        private void hideDecryptingView()
+        {
+            this.decryptedTextRadioButton.Visibility = Visibility.Collapsed;
+            this.encryptedTextRadioButton.Visibility = Visibility.Collapsed;
+        }
+
+        private void hideExtractingView()
+        {
+            this.extractButton.Visibility = Visibility.Collapsed;
+        }
+
+        private void hideEmbeddingView()
+        {
+            this.chooseEncryptionTextBlock.Visibility = Visibility.Collapsed;
+            this.encryptedRadioButton.Visibility = Visibility.Collapsed;
+            this.unencryptedRadioButton.Visibility = Visibility.Collapsed;
+            this.embedButton.Visibility = Visibility.Collapsed;
+        }
+
+        private void resetImages()
+        {
+            this.hiddenImage.Source = null;
+            this.sourceImage.Source = null;
+            this.embeddedImage.Source = null;
+            this.extractedImage.Source = null;
+            this.recentImage.Source = null;
+        }
+
+        private void SaveSymbol_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            this.saveSymbol.Foreground = (Brush)Application.Current.Resources["SymbolHoverColor"];
+        }
+
+        private void SaveSymbol_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            this.resetSymbolColors();
+        }
+
+        private void resetSymbolColors()
+        {
+            this.clearSymbol.Foreground = (Brush)Application.Current.Resources["SymbolColor"];
+            this.saveSymbol.Foreground = (Brush)Application.Current.Resources["SymbolColor"];
+        }
+
+        private void ClearSymbol_PointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            this.clearSymbol.Foreground = (Brush)Application.Current.Resources["SymbolHoverColor"];
+        }
+
+        private void ClearSymbol_PointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            this.resetSymbolColors();
+        }
+
+        private void navigationView_OnBackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
+        {
+            if (this.Frame.CanGoBack)
+            {
+                this.Frame.GoBack();
+            }
         }
 
         #endregion

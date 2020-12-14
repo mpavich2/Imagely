@@ -146,6 +146,9 @@
     <Compile Include="Viewmodel\MainPageViewModel.cs" />
     <Compile Include="Viewmodel\StegafyPageViewModel.cs" />
     <Compile Include="Viewmodel\TriangulationPageViewModel.cs" />
+    <Compile Include="View\Dialogs\DivideByZeroDialog.xaml.cs">
+      <DependentUpon>DivideByZeroDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Dialogs\InvalidFileDialog.xaml.cs">
       <DependentUpon>InvalidFileDialog.xaml</DependentUpon>
     </Compile>
@@ -166,6 +169,9 @@
     </Compile>
     <Compile Include="View\Dialogs\NoHiddenMessageDialog.xaml.cs">
       <DependentUpon>NoHiddenMessageDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\NewHomePage.xaml.cs">
+      <DependentUpon>NewHomePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\StegafyPage.xaml.cs">
       <DependentUpon>StegafyPage.xaml</DependentUpon>
@@ -251,6 +257,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="View\Dialogs\DivideByZeroDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Dialogs\InvalidFileDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -276,6 +286,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dialogs\NoHiddenMessageDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\NewHomePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

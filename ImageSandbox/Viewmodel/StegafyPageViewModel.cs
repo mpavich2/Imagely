@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using GroupCStegafy.Constants;
 using GroupCStegafy.Enums;
@@ -22,11 +23,13 @@ namespace GroupCStegafy.Viewmodel
     {
         #region Data members
 
+        private const string MessageTooLongText =
+            "Hidden image will not fit with any bits per color channel amount selected.";
+
         private readonly EmbeddingManager embeddingManager;
         private readonly HeaderManager headerManager;
         private readonly ExtractionManager extractionManager;
         private string keyword;
-        private const string MessageTooLongText = "Hidden image will not fit with any bits per color channel amount selected.";
 
         #endregion
 
@@ -65,10 +68,10 @@ namespace GroupCStegafy.Viewmodel
         public Picture ExtractedPicture { get; }
 
         /// <summary>
-        /// Gets the decrypted picture.
+        ///     Gets the decrypted picture.
         /// </summary>
         /// <value>
-        /// The decrypted picture.
+        ///     The decrypted picture.
         /// </value>
         public Picture DecryptedPicture { get; private set; }
 
@@ -89,42 +92,42 @@ namespace GroupCStegafy.Viewmodel
         public FileType HiddenFileType { get; private set; }
 
         /// <summary>
-        /// Gets the type of the encryption.
+        ///     Gets the type of the encryption.
         /// </summary>
         /// <value>
-        /// The type of the encryption.
+        ///     The type of the encryption.
         /// </value>
         public EncryptionType EncryptionType { get; private set; }
 
         /// <summary>
-        /// Gets the extracted text.
+        ///     Gets the extracted text.
         /// </summary>
         /// <value>
-        /// The extracted text.
+        ///     The extracted text.
         /// </value>
         public string ExtractedText { get; private set; }
 
         /// <summary>
-        /// Gets the bits per color channel.
+        ///     Gets the bits per color channel.
         /// </summary>
         /// <value>
-        /// The bits per color channel.
+        ///     The bits per color channel.
         /// </value>
         public int BitsPerColorChannel { get; private set; }
 
         /// <summary>
-        /// Gets the decrypted text.
+        ///     Gets the decrypted text.
         /// </summary>
         /// <value>
-        /// The decrypted text.
+        ///     The decrypted text.
         /// </value>
         public string DecryptedText { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether this instance is hidden text too big.
+        ///     Gets a value indicating whether this instance is hidden text too big.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if this instance is hidden text too big; otherwise, <c>false</c>.
+        ///     <c>true</c> if this instance is hidden text too big; otherwise, <c>false</c>.
         /// </value>
         public bool IsHiddenTextTooBig { get; private set; }
 
@@ -152,10 +155,10 @@ namespace GroupCStegafy.Viewmodel
         #region Methods
 
         /// <summary>
-        /// Opens the source image.
+        ///     Opens the source image.
         /// </summary>
         /// <returns>
-        /// true if file opened, false otherwise
+        ///     true if file opened, false otherwise
         /// </returns>
         public async Task<bool> OpenSourceImage()
         {
@@ -164,6 +167,7 @@ namespace GroupCStegafy.Viewmodel
             {
                 return false;
             }
+
             var copyBitmapImage = await FileUtilities.MakeCopyOfTheImage(sourceImageFile);
 
             using (var fileStream = await sourceImageFile.OpenAsync(FileAccessMode.Read))
@@ -207,6 +211,7 @@ namespace GroupCStegafy.Viewmodel
             {
                 return false;
             }
+
             if (this.checkFileType(hiddenFile) == FileType.Picture)
             {
                 value = await this.openHiddenImage(hiddenFile);
@@ -232,6 +237,30 @@ namespace GroupCStegafy.Viewmodel
         }
 
         /// <summary>
+        ///     Converts image to Picture then saves it.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        public async Task SaveImage(Image image)
+        {
+            var renderTargetBitmap = new RenderTargetBitmap();
+            await renderTargetBitmap.RenderAsync(image);
+            var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
+            var pixels = pixelBuffer.ToArray();
+            var writableBitmap = new WriteableBitmap(renderTargetBitmap.PixelWidth, renderTargetBitmap.PixelHeight);
+            using (var stream = writableBitmap.PixelBuffer.AsStream())
+            {
+                await stream.WriteAsync(pixels, 0, pixels.Length);
+            }
+
+            var picture = new Picture {
+                ModifiedImage = writableBitmap,
+                Width = (uint) renderTargetBitmap.PixelWidth,
+                Height = (uint) renderTargetBitmap.PixelHeight
+            };
+            FileUtilities.SaveImage(picture);
+        }
+
+        /// <summary>
         ///     Checks the type of the file.
         /// </summary>
         /// <param name="dragEvent">The <see cref="DragEventArgs" /> instance containing the event data.</param>
@@ -239,6 +268,12 @@ namespace GroupCStegafy.Viewmodel
         public async Task<FileType> CheckFileType(DragEventArgs dragEvent)
         {
             var storageFile = await this.getDroppedStorageFile(dragEvent);
+            var fileType = this.checkFileType(storageFile);
+            if (fileType == FileType.Invalid)
+            {
+                await this.showInvalidFileDialog();
+            }
+
             return this.checkFileType(storageFile);
         }
 
@@ -256,15 +291,17 @@ namespace GroupCStegafy.Viewmodel
         }
 
         /// <summary>
-        /// Embeds the file.
+        ///     Embeds the file.
         /// </summary>
         /// <returns></returns>
         public async Task<bool> EmbedFile()
         {
-            if (await this.keywordSettingsInvalid() || this.HiddenFileType == FileType.Text && await this.isTextFileTooBig())
+            if (await this.keywordSettingsInvalid() ||
+                this.HiddenFileType == FileType.Text && await this.isTextFileTooBig())
             {
                 return false;
             }
+
             this.headerManager.UpdateHeaderInfo(this.EncryptionType, this.HiddenFileType, this.BitsPerColorChannel);
             this.SourcePicture.Pixels = this.headerManager.SetHeaderForHiddenMessage();
             this.copySourcePicture(this.SourcePicture, this.EmbeddedPicture);
@@ -306,9 +343,8 @@ namespace GroupCStegafy.Viewmodel
             this.EncryptionType = this.extractionManager.IsEncrypted();
         }
 
-
         /// <summary>
-        /// Decrypts the text.
+        ///     Decrypts the text.
         /// </summary>
         public void DecryptText()
         {
@@ -319,7 +355,7 @@ namespace GroupCStegafy.Viewmodel
         }
 
         /// <summary>
-        /// Decrypts the image.
+        ///     Decrypts the image.
         /// </summary>
         public void DecryptImage()
         {
@@ -329,7 +365,7 @@ namespace GroupCStegafy.Viewmodel
                 this.copySourcePicture(this.ExtractedPicture, this.DecryptedPicture);
                 DecryptionManager.DecryptPicture(this.DecryptedPicture);
                 this.DecryptedPicture.ModifiedImage =
-                    new WriteableBitmap((int)this.DecryptedPicture.Width, (int)this.DecryptedPicture.Height);
+                    new WriteableBitmap((int) this.DecryptedPicture.Width, (int) this.DecryptedPicture.Height);
             }
         }
 
@@ -377,10 +413,12 @@ namespace GroupCStegafy.Viewmodel
                             ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
                             ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
                         };
-                        if (this.HiddenPicture.ModifiedImage == null && this.SourcePicture.ModifiedImage != null && await this.isHiddenImageTooLarge(decoder))
+                        if (this.HiddenPicture.ModifiedImage == null && this.SourcePicture.ModifiedImage != null &&
+                            await this.isHiddenImageTooLarge(decoder))
                         {
                             return false;
                         }
+
                         picture.ModifiedImage =
                             new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
                         picture.DpiX = decoder.DpiX;
@@ -491,12 +529,22 @@ namespace GroupCStegafy.Viewmodel
 
         private FileType checkFileType(StorageFile storageFile)
         {
+            if (storageFile == null)
+            {
+                return FileType.Invalid;
+            }
+
             if (storageFile.FileType.Equals(".png") || storageFile.FileType.Equals(".bmp"))
             {
                 return FileType.Picture;
             }
 
-            return FileType.Text;
+            if (storageFile.FileType.Equals(".txt"))
+            {
+                return FileType.Text;
+            }
+
+            return FileType.Invalid;
         }
 
         private async Task<StorageFile> getDroppedStorageFile(DragEventArgs dragEvent)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -16,6 +15,7 @@ using GroupCStegafy.Model;
 using GroupCStegafy.Model.DelaunayTriangulation;
 using GroupCStegafy.Model.Filters;
 using GroupCStegafy.Utils;
+using GroupCStegafy.View.Dialogs;
 using Point = Windows.Foundation.Point;
 
 namespace GroupCStegafy.Viewmodel
@@ -70,9 +70,14 @@ namespace GroupCStegafy.Viewmodel
         /// <summary>
         ///     Opens the source image.
         /// </summary>
-        public async Task OpenSourceImage()
+        public async Task<bool> OpenSourceImage()
         {
-            var sourceImageFile = await FileUtilities.SelectFile();
+            var sourceImageFile = await FileUtilities.SelectPngFile();
+            if (!await this.isFileValid(sourceImageFile))
+            {
+                return false;
+            }
+
             var copyBitmapImage = await FileUtilities.MakeCopyOfTheImage(sourceImageFile);
 
             using (var fileStream = await sourceImageFile.OpenAsync(FileAccessMode.Read))
@@ -101,22 +106,26 @@ namespace GroupCStegafy.Viewmodel
                 this.SourcePicture.Width = decoder.PixelWidth;
                 this.SourcePicture.Height = decoder.PixelHeight;
             }
+
+            return true;
         }
 
         /// <summary>
         ///     Opens the dragged image.
         /// </summary>
         /// <param name="dragEvent">The <see cref="DragEventArgs" /> instance containing the event data.</param>
-        public async Task OpenDraggedImage(DragEventArgs dragEvent)
+        /// <returns>True if file is valid, false otherwise</returns>
+        public async Task<bool> OpenDraggedImage(DragEventArgs dragEvent)
         {
             try
             {
                 await this.openDraggedFile(dragEvent);
+                return true;
             }
-            catch (Exception exception)
+            catch
             {
-                //TODO make flyout that says please select a png or bmp image.
-                Debug.WriteLine(exception.Message);
+                await this.showInvalidFileDialog();
+                return false;
             }
         }
 
@@ -166,7 +175,7 @@ namespace GroupCStegafy.Viewmodel
         /// <summary>
         ///     Clears the source and copied pictures.
         /// </summary>
-        public void clear()
+        public void Clear()
         {
             this.SourcePicture = new Picture();
             this.CopiedPicture = new Picture();
@@ -177,16 +186,22 @@ namespace GroupCStegafy.Viewmodel
         /// </summary>
         /// <param name="canvas">The canvas.</param>
         /// <param name="pointsText">The points text.</param>
-        public void DrawTriangulation(Canvas canvas, string pointsText)
+        public async void DrawTriangulation(Canvas canvas, string pointsText)
         {
-            var pointCount = int.Parse(pointsText);
-            var points = this.delaunay.GeneratePoints(this.CopiedPicture, pointCount, this.CopiedPicture.Width,
-                this.CopiedPicture.Height);
-
-            var triangulation = this.delaunay.BowyerWatson(points);
-            foreach (var triangle in triangulation)
+            try
             {
-                this.drawTriangle(canvas, triangle);
+                var pointCount = int.Parse(pointsText);
+                var points = this.delaunay.GeneratePoints(this.CopiedPicture, pointCount, this.CopiedPicture.Width,
+                    this.CopiedPicture.Height);
+                var triangulation = this.delaunay.BowyerWatson(points);
+                foreach (var triangle in triangulation)
+                {
+                    this.drawTriangle(canvas, triangle);
+                }
+            }
+            catch
+            {
+                await this.showDivideByZeroDialog();
             }
         }
 
@@ -228,6 +243,23 @@ namespace GroupCStegafy.Viewmodel
                 polygon.StrokeThickness = 1.0;
                 canvas.Children.Add(polygon);
             }
+        }
+
+        private async Task<bool> isFileValid(StorageFile file)
+        {
+            if (file == null)
+            {
+                await this.showInvalidFileDialog();
+                return false;
+            }
+
+            return true;
+        }
+
+        private async Task showInvalidFileDialog()
+        {
+            var dialog = new InvalidFileDialog();
+            await dialog.ShowAsync();
         }
 
         private void drawTriangle(Canvas canvas, Triangle triangle)
@@ -306,6 +338,12 @@ namespace GroupCStegafy.Viewmodel
                     }
                 }
             }
+        }
+
+        private async Task showDivideByZeroDialog()
+        {
+            var dialog = new DivideByZeroDialog();
+            await dialog.ShowAsync();
         }
 
         #endregion

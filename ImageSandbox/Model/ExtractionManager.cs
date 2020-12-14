@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Text;
+﻿using System.Text;
 using Windows.UI;
 using GroupCStegafy.Constants;
 using GroupCStegafy.Enums;
@@ -14,21 +13,17 @@ namespace GroupCStegafy.Model
     {
         #region Data members
 
-        private const int EndOfText = 3;
-        private const int BeginningOfText = 2;
-        private const int EndOfKey = 1;
+        private const int END_OF_TEXT = 3;
+        private const int BEGINNING_OF_TEXT = 2;
+        private const int END_OF_KEY = 1;
 
         private readonly Picture sourcePicture;
         private int bpcc;
         private bool hasPassedKey;
         private int endOfTextCharactersPassed;
 
-        private readonly int byteLength = ImageConstants.ByteLength;
         private readonly byte maxRgbValue = (byte) ImageConstants.MaxRgbValue;
         private readonly byte minRgbValue = (byte) ImageConstants.MinRgbValue;
-        private readonly string endOfText = ImageConstants.Ending;
-        private readonly int firstX = ImageConstants.FirstX;
-        private readonly int secondX = ImageConstants.SecondX;
 
         #endregion
 
@@ -102,7 +97,8 @@ namespace GroupCStegafy.Model
         /// </returns>
         public bool ContainsHiddenMessage()
         {
-            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, this.firstX, this.firstX,
+            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX,
+                ImageConstants.FirstX,
                 this.sourcePicture.Width,
                 this.sourcePicture.Height);
             return HeaderManager.ContainsHiddenMessage(sourcePixelColor);
@@ -116,7 +112,8 @@ namespace GroupCStegafy.Model
         /// </returns>
         public EncryptionType IsEncrypted()
         {
-            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, this.firstX, this.secondX,
+            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX,
+                ImageConstants.SecondX,
                 this.sourcePicture.Width,
                 this.sourcePicture.Height);
             return HeaderManager.CheckForEncryption(sourcePixelColor);
@@ -130,7 +127,8 @@ namespace GroupCStegafy.Model
         /// </returns>
         public bool IsText()
         {
-            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, this.firstX, this.secondX,
+            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX,
+                ImageConstants.SecondX,
                 this.sourcePicture.Width,
                 this.sourcePicture.Height);
             return HeaderManager.CheckFileType(sourcePixelColor);
@@ -138,7 +136,7 @@ namespace GroupCStegafy.Model
 
         private void setPixelToMonochromeColor(byte[] pixels, Color hiddenPixelColor, int i, int j)
         {
-            if (PixelManager.GetLeastSignificantBit(hiddenPixelColor.B) == 0)
+            if (PixelManager.GetLeastSignificantBit(hiddenPixelColor.B) == ImageConstants.MinRgbValue)
             {
                 this.setPixelBlack(pixels, i, j);
             }
@@ -187,14 +185,14 @@ namespace GroupCStegafy.Model
             out string extractTextFromBytes1)
         {
             extractTextFromBytes1 = string.Empty;
-            if (i % this.byteLength != 0 || i == 0)
+            if (i % ImageConstants.ByteLength != 0 || i == 0)
             {
                 return false;
             }
 
             var current = i;
             current -= this.bpcc;
-            return this.bpcc == this.byteLength
+            return this.bpcc == ImageConstants.ByteLength
                 ? this.getTextIfBpccIs8(pixels, binaryText, text, ref extractTextFromBytes1, current)
                 : this.getTextIfBpccLessThan8(pixels, binaryText, text, ref extractTextFromBytes1, current);
         }
@@ -202,7 +200,7 @@ namespace GroupCStegafy.Model
         private bool getTextIfBpccIs8(bool[] pixels, StringBuilder binaryText, StringBuilder text,
             ref string extractedText, int current)
         {
-            while (current % this.byteLength < this.bpcc)
+            while (current % ImageConstants.ByteLength < this.bpcc)
             {
                 this.appendBit(pixels, current, binaryText);
                 current++;
@@ -219,7 +217,7 @@ namespace GroupCStegafy.Model
         private bool getTextIfBpccLessThan8(bool[] pixels, StringBuilder binaryText, StringBuilder text,
             ref string extractedText, int current)
         {
-            while (current % this.byteLength != this.firstX)
+            while (current % ImageConstants.ByteLength != ImageConstants.FirstX)
             {
                 this.appendBit(pixels, current, binaryText);
                 current++;
@@ -288,7 +286,7 @@ namespace GroupCStegafy.Model
 
         private bool matchesEnding(StringBuilder text, string letter)
         {
-            if (letter.Equals(this.endOfText))
+            if (letter.Equals(ImageConstants.Ending))
             {
                 this.endOfTextCharactersPassed++;
                 this.setKeyword(text);
@@ -306,7 +304,7 @@ namespace GroupCStegafy.Model
 
         private void checkIfPassedKey()
         {
-            if (this.endOfTextCharactersPassed >= BeginningOfText && this.IsEncrypted() == EncryptionType.Encrypted)
+            if (this.endOfTextCharactersPassed >= BEGINNING_OF_TEXT && this.IsEncrypted() == EncryptionType.Encrypted)
             {
                 this.hasPassedKey = true;
             }
@@ -314,12 +312,13 @@ namespace GroupCStegafy.Model
 
         private bool isTextOver()
         {
-            return this.endOfTextCharactersPassed == EndOfText && this.IsEncrypted() == EncryptionType.Encrypted || this.IsEncrypted() == EncryptionType.Unencrypted;
+            return this.endOfTextCharactersPassed == END_OF_TEXT && this.IsEncrypted() == EncryptionType.Encrypted ||
+                   this.IsEncrypted() == EncryptionType.Unencrypted;
         }
 
         private void setKeyword(StringBuilder text)
         {
-            if (this.endOfTextCharactersPassed == EndOfKey)
+            if (this.endOfTextCharactersPassed == END_OF_KEY)
             {
                 this.KeyWord = text.ToString();
             }
@@ -327,7 +326,8 @@ namespace GroupCStegafy.Model
 
         private void checkBpccValue()
         {
-            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, this.firstX, this.secondX,
+            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX,
+                ImageConstants.SecondX,
                 this.sourcePicture.Width,
                 this.sourcePicture.Height);
             this.bpcc = sourcePixelColor.G;
@@ -335,7 +335,7 @@ namespace GroupCStegafy.Model
 
         private bool isBinaryStringLongEnough(StringBuilder binaryText)
         {
-            return binaryText.Length == this.byteLength;
+            return binaryText.Length == ImageConstants.ByteLength;
         }
 
         private string convertBinaryToLetter(StringBuilder binaryText)

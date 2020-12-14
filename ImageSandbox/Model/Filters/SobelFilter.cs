@@ -1,20 +1,23 @@
 ﻿using Windows.UI;
 using Windows.UI.Xaml.Media.Imaging;
+using GroupCStegafy.Constants;
 using GroupCStegafy.Utils;
 
 namespace GroupCStegafy.Model.Filters
 {
     /// <summary>
-    /// Defines the Sobel Filter Class.
+    ///     Defines the Sobel Filter Class.
     /// </summary>
     public class SobelFilter
     {
         #region Data members
 
         private const int MaxLimit = 16384;
+        private readonly int[,] gx = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
+        private readonly int[,] gy = {{1, 2, 1}, {0, 0, 0}, {-1, -2, -1}};
 
-        private readonly byte maxRgbValue = (byte) Constants.ImageConstants.MaxRgbValue;
-        private readonly byte minRgbValue = (byte) Constants.ImageConstants.MinRgbValue;
+        private readonly byte maxRgbValue = (byte) ImageConstants.MaxRgbValue;
+        private readonly byte minRgbValue = (byte) ImageConstants.MinRgbValue;
         private readonly Picture sourcePicture;
 
         #endregion
@@ -22,7 +25,7 @@ namespace GroupCStegafy.Model.Filters
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SobelFilter"/> class.
+        ///     Initializes a new instance of the <see cref="SobelFilter" /> class.
         /// </summary>
         /// <param name="picture">The picture.</param>
         public SobelFilter(Picture picture)
@@ -35,32 +38,15 @@ namespace GroupCStegafy.Model.Filters
         #region Methods
 
         /// <summary>
-        /// Applies the sobel filter.
+        ///     Applies the sobel filter.
         /// </summary>
         public void applySobelFilter()
         {
-            var gx = new[,] {{-1, 0, 1}, 
-                             {-2, 0, 2}, 
-                             {-1, 0, 1}};
-            var gy = new[,] {{1, 2, 1}, 
-                             {0, 0, 0}, 
-                             {-1, -2, -1}};
             var allPixR = new int[this.sourcePicture.Width, this.sourcePicture.Height];
             var allPixG = new int[this.sourcePicture.Width, this.sourcePicture.Height];
             var allPixB = new int[this.sourcePicture.Width, this.sourcePicture.Height];
 
-            for (var i = 0; i < this.sourcePicture.Width - 1; i++)
-            {
-                for (var j = 0; j < this.sourcePicture.Height - 1; j++)
-                {
-                    var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, j, i,
-                        this.sourcePicture.Width,
-                        this.sourcePicture.Height);
-                    allPixR[i, j] = sourcePixelColor.R;
-                    allPixG[i, j] = sourcePixelColor.G;
-                    allPixB[i, j] = sourcePixelColor.B;
-                }
-            }
+            this.loadAllPixelColorData(allPixR, allPixG, allPixB);
 
             var width = (int) this.sourcePicture.Width - 1;
             var height = (int) this.sourcePicture.Height - 1;
@@ -75,43 +61,83 @@ namespace GroupCStegafy.Model.Filters
                     var newBx = 0;
                     var newBy = 0;
 
-                    for (var wi = -1; wi < 2; wi++)
+                    newRx = this.applyConvolutionToPixels(allPixR, i, j, newRx, allPixG, allPixB, ref newRy, ref newGx,
+                        ref newGy, ref newBx, ref newBy);
+
+                    if (this.isEdge(newRx, newRy, newGx, newGy, newBx, newBy))
                     {
-                        for (var hw = -1; hw < 2; hw++)
-                        {
-                            var rc = allPixR[i + hw, j + wi];
-                            newRx += gx[wi + 1, hw + 1] * rc;
-                            newRy += gy[wi + 1, hw + 1] * rc;
-
-                            var gc = allPixG[i + hw, j + wi];
-                            newGx += gx[wi + 1, hw + 1] * gc;
-                            newGy += gy[wi + 1, hw + 1] * gc;
-
-                            var bc = allPixB[i + hw, j + wi];
-                            newBx += gx[wi + 1, hw + 1] * bc;
-                            newBy += gy[wi + 1, hw + 1] * bc;
-                        }
-                    }
-
-                    if (newRx * newRx + newRy * newRy > MaxLimit || newGx * newGx + newGy * newGy > MaxLimit ||
-                        newBx * newBx + newBy * newBy > MaxLimit)
-                    {
-                        var sourcePixelColor =
-                            Color.FromArgb(this.maxRgbValue, this.maxRgbValue, this.maxRgbValue, this.maxRgbValue);
-                        PixelManager.SetPixelBgra8(this.sourcePicture.Pixels, j, i, sourcePixelColor,
-                            this.sourcePicture.Width, this.sourcePicture.Height);
+                        this.setPixelWhite(j, i);
                     }
                     else
                     {
-                        var sourcePixelColor =
-                            Color.FromArgb(this.maxRgbValue, this.minRgbValue, this.minRgbValue, this.minRgbValue);
-                        PixelManager.SetPixelBgra8(this.sourcePicture.Pixels, j, i, sourcePixelColor,
-                            this.sourcePicture.Width, this.sourcePicture.Height);
+                        this.setPixelBlack(j, i);
                     }
                 }
 
                 this.sourcePicture.ModifiedImage =
                     new WriteableBitmap((int) this.sourcePicture.Width, (int) this.sourcePicture.Height);
+            }
+        }
+
+        private void setPixelBlack(int j, int i)
+        {
+            var sourcePixelColor =
+                Color.FromArgb(this.maxRgbValue, this.minRgbValue, this.minRgbValue, this.minRgbValue);
+            PixelManager.SetPixelBgra8(this.sourcePicture.Pixels, j, i, sourcePixelColor,
+                this.sourcePicture.Width, this.sourcePicture.Height);
+        }
+
+        private void setPixelWhite(int j, int i)
+        {
+            var sourcePixelColor =
+                Color.FromArgb(this.maxRgbValue, this.maxRgbValue, this.maxRgbValue, this.maxRgbValue);
+            PixelManager.SetPixelBgra8(this.sourcePicture.Pixels, j, i, sourcePixelColor,
+                this.sourcePicture.Width, this.sourcePicture.Height);
+        }
+
+        private bool isEdge(int newRx, int newRy, int newGx, int newGy, int newBx, int newBy)
+        {
+            return newRx * newRx + newRy * newRy > MaxLimit || newGx * newGx + newGy * newGy > MaxLimit ||
+                   newBx * newBx + newBy * newBy > MaxLimit;
+        }
+
+        private int applyConvolutionToPixels(int[,] allPixR, int i, int j, int newRx, int[,] allPixG, int[,] allPixB,
+            ref int newRy, ref int newGx, ref int newGy, ref int newBx, ref int newBy)
+        {
+            for (var x = -1; x < 2; x++)
+            {
+                for (var y = -1; y < 2; y++)
+                {
+                    var redConvolution = allPixR[i + y, j + x];
+                    newRx += this.gx[x + 1, y + 1] * redConvolution;
+                    newRy += this.gy[x + 1, y + 1] * redConvolution;
+
+                    var greenConvolution = allPixG[i + y, j + x];
+                    newGx += this.gx[x + 1, y + 1] * greenConvolution;
+                    newGy += this.gy[x + 1, y + 1] * greenConvolution;
+
+                    var blueConvolution = allPixB[i + y, j + x];
+                    newBx += this.gx[x + 1, y + 1] * blueConvolution;
+                    newBy += this.gy[x + 1, y + 1] * blueConvolution;
+                }
+            }
+
+            return newRx;
+        }
+
+        private void loadAllPixelColorData(int[,] allPixR, int[,] allPixG, int[,] allPixB)
+        {
+            for (var i = 0; i < this.sourcePicture.Width - 1; i++)
+            {
+                for (var j = 0; j < this.sourcePicture.Height - 1; j++)
+                {
+                    var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, j, i,
+                        this.sourcePicture.Width,
+                        this.sourcePicture.Height);
+                    allPixR[i, j] = sourcePixelColor.R;
+                    allPixG[i, j] = sourcePixelColor.G;
+                    allPixB[i, j] = sourcePixelColor.B;
+                }
             }
         }
 

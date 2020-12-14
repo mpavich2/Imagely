@@ -8,7 +8,7 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid Background="#FF212529" Margin="0,0,-420,-8">
+    <Grid Background="#FF212529" Margin="0,0,0,-8">
         <ScrollViewer VerticalScrollBarVisibility="Visible" Margin="1558,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">
             <Grid Background="#FF272B2F" Height="1386" Width="362">
                 <Border BorderThickness="1" BorderBrush="{StaticResource BorderColor}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,42,0,0">
@@ -68,7 +68,9 @@
         <RadioButton x:Name="encryptedTextRadioButton" Content="Encrypted Text" Margin="744,895,0,0" VerticalAlignment="Top" Checked="EncryptedTextRadioButton_Checked" GroupName="extractedTextRadioButtons" Width="155" Visibility="Collapsed" IsChecked="True"/>
         <RadioButton x:Name="decryptedTextRadioButton" Content="Decrypted Text" Margin="744,927,0,0" VerticalAlignment="Top" GroupName="extractedTextRadioButtons" Checked="DecryptedTextRadioButton_Checked" Visibility="Collapsed"/>
         <Rectangle Fill="Transparent" HorizontalAlignment="Left" Height="738" Margin="79,46,0,0" VerticalAlignment="Top" Width="1451"/>
-        <NavigationView x:Name="navigationView" IsBackButtonVisible="Collapsed" IsPaneOpen="False" Loaded="NavigationView_Loaded" Visibility="Collapsed">
+        <SymbolIcon x:Name="saveSymbol" Symbol="Save" Height="20" Width="20" Margin="1499,867,0,0" Foreground="{StaticResource SymbolColor}" Tapped="SaveSymbol_Tapped" VerticalAlignment="Top" HorizontalAlignment="Left" PointerEntered="SaveSymbol_PointerEntered" PointerExited="SaveSymbol_PointerExited"/>
+        <SymbolIcon x:Name="clearSymbol" Symbol="Clear" Height="20" Width="20" Margin="1499,837,0,0" Foreground="{StaticResource SymbolColor}" Tapped="ClearSymbol_Tapped" VerticalAlignment="Top" HorizontalAlignment="Left" PointerEntered="ClearSymbol_PointerEntered" PointerExited="ClearSymbol_PointerExited"/>
+        <NavigationView x:Name="navigationView" IsPaneOpen="False" Loaded="NavigationView_Loaded" Visibility="Visible" BackRequested="navigationView_OnBackRequested" >
             <NavigationView.MenuItems>
                 <NavigationViewItem Icon="Pictures" Content="Home" Tapped="Home_Tapped" />
                 <NavigationViewItem Icon="Pictures" Content="Image Triangulation Art" Tapped="ImageTriangulationArt_Tapped" />
@@ -77,6 +79,5 @@
                 <NavigationViewItem Icon="Pictures" Content="Paint by Number Generator" Tapped="PaintByNumberGenerator_Tapped" />
             </NavigationView.MenuItems>
         </NavigationView>
-        <Image Source="../Assets/ImageManipulatorIcon.png"  HorizontalAlignment="Left" Height="19" VerticalAlignment="Top" Width="19" Margin="10,10,0,0"/>
     </Grid>
 </Page>

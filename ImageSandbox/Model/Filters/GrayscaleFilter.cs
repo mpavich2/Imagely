@@ -1,6 +1,7 @@
 ﻿using System;
 using Windows.UI;
 using Windows.UI.Xaml.Media.Imaging;
+using GroupCStegafy.Constants;
 using GroupCStegafy.Utils;
 
 namespace GroupCStegafy.Model.Filters
@@ -13,7 +14,7 @@ namespace GroupCStegafy.Model.Filters
         #region Data members
 
         private readonly Picture sourcePicture;
-        private readonly byte maxRgbValue = (byte) Constants.ImageConstants.MaxRgbValue;
+        private readonly byte maxRgbValue = (byte) ImageConstants.MaxRgbValue;
 
         #endregion
 
@@ -44,7 +45,8 @@ namespace GroupCStegafy.Model.Filters
                     var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, j, i,
                         this.sourcePicture.Width,
                         this.sourcePicture.Height);
-                    var averageColor = (sourcePixelColor.R + sourcePixelColor.G + sourcePixelColor.B) / 3;
+                    var averageColor = (sourcePixelColor.R + sourcePixelColor.G + sourcePixelColor.B) /
+                                       ImageConstants.ColorChannelCount;
                     var averageColorByte = Convert.ToByte(averageColor);
                     var newPixelColor = Color.FromArgb(this.maxRgbValue, averageColorByte, averageColorByte,
                         averageColorByte);
