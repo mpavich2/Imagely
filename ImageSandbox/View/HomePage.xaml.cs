@@ -1,9 +1,5 @@
-﻿using Windows.ApplicationModel.Core;
-using Windows.UI;
-using Windows.UI.ViewManagement;
-using Windows.UI.Xaml;
+﻿using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
-using GroupCStegafy.View.Dialogs;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -22,46 +18,55 @@ namespace GroupCStegafy.View
         public HomePage()
         {
             this.InitializeComponent();
-            CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = true;
-            var titleBar = ApplicationView.GetForCurrentView().TitleBar;
-            titleBar.ButtonBackgroundColor = Colors.Transparent;
-            titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
-            titleBar.ButtonForegroundColor = Colors.White;
-            this.navigationView.SelectedItem = this.navigationView.MenuItems[0];
         }
 
         #endregion
 
         #region Methods
 
-        private void NavigationView_Loaded(object sender, RoutedEventArgs e)
-        {
-            this.navigationView.IsPaneOpen = false;
-        }
-
-        private void Home_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            Frame.Navigate(typeof(HomePage));
-        }
-
-        private void ImageTriangulationArt_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            Frame.Navigate(typeof(TriangulationPage));
-        }
-
-        private void Steganography_Tapped(object sender, TappedRoutedEventArgs e)
+        private void steganographyTextBlock_Tapped(object sender, TappedRoutedEventArgs e)
         {
             Frame.Navigate(typeof(StegafyPage));
         }
 
-        private void AbstractTriangulationArt_Tapped(object sender, TappedRoutedEventArgs e)
+        private void imageTriangulationTextBlock_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            //TODO add abstract triangulation art page
+            Frame.Navigate(typeof(TriangulationPage));
         }
 
-        private void PaintByNumberGenerator_Tapped(object sender, TappedRoutedEventArgs e)
+        private void abstractTriangulationTextBlock_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            //TODO add paint by number generator page
+            //TODO: naviagate to abstract triangulation page
+        }
+
+        private void steganographyTextBlock_OnPointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            this.steganographyUnderline.Visibility = Visibility.Visible;
+        }
+
+        private void imageTriangulationTextBlock_OnPointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            this.imageTriangulationUnderline.Visibility = Visibility.Visible;
+        }
+
+        private void abstractTriangulationTextBlock_OnPointerEntered(object sender, PointerRoutedEventArgs e)
+        {
+            this.abstractTriangulationUnderline.Visibility = Visibility.Visible;
+        }
+
+        private void steganographyTextBlock_OnPointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            this.steganographyUnderline.Visibility = Visibility.Collapsed;
+        }
+
+        private void imageTriangulationTextBlock_OnPointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            this.imageTriangulationUnderline.Visibility = Visibility.Collapsed;
+        }
+
+        private void abstractTriangulationTextBlock_OnPointerExited(object sender, PointerRoutedEventArgs e)
+        {
+            this.abstractTriangulationUnderline.Visibility = Visibility.Collapsed;
         }
 
         #endregion

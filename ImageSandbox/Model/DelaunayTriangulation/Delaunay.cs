@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GroupCStegafy.Constants;
 using GroupCStegafy.Utils;
 
 namespace GroupCStegafy.Model.DelaunayTriangulation
@@ -26,7 +27,7 @@ namespace GroupCStegafy.Model.DelaunayTriangulation
         #region Methods
 
         /// <summary>
-        /// Generates the points.
+        ///     Generates the points.
         /// </summary>
         /// <param name="sourcePicture">The source picture.</param>
         /// <param name="amount">The amount.</param>
@@ -38,16 +39,9 @@ namespace GroupCStegafy.Model.DelaunayTriangulation
             this.MaxX = maxX;
             this.MaxY = maxY;
 
-            var point0 = new Point(0, 0);
-            var point1 = new Point(0, this.MaxY);
-            var point2 = new Point(this.MaxX, this.MaxY);
-            var point3 = new Point(this.MaxX, 0);
-            var points = new List<Point> { point0, point1, point2, point3 };
-            var tri1 = new Triangle(point0, point1, point2);
-            var tri2 = new Triangle(point0, point2, point3);
-            this.border = new List<Triangle> { tri1, tri2 };
-
+            var points = this.setupPoints();
             var random = new Random();
+
             //for (var i = 0; i < amount - 4; i++)
             //{
             //    var pointX = random.NextDouble() * this.MaxX;
@@ -60,7 +54,8 @@ namespace GroupCStegafy.Model.DelaunayTriangulation
             {
                 throw new Exception("Amount of points cannot exceed the number of available points for triangles.");
             }
-            for (var i = 0; i < amount - 4; i++)
+
+            for (var i = 0; i < amount - ImageConstants.DefaultPointCount; i++)
             {
                 var randomIndex = random.Next(whitePoints.Count());
                 points.Add(whitePoints.ElementAt(randomIndex));
@@ -84,29 +79,17 @@ namespace GroupCStegafy.Model.DelaunayTriangulation
                 var badTriangles = this.findBadTriangles(point, triangulation);
                 var polygon = this.findHoleBoundaries(badTriangles);
 
-                foreach (var triangle in badTriangles)
-                {
-                    foreach (var vertex in triangle.Vertices)
-                    {
-                        vertex.AdjacentTriangles.Remove(triangle);
-                    }
-                }
-
+                this.removeBadTriangles(badTriangles);
                 triangulation.RemoveWhere(o => badTriangles.Contains(o));
 
-                foreach (var edge in polygon.Where(possibleEdge =>
-                    possibleEdge.Point1 != point && possibleEdge.Point2 != point))
-                {
-                    var triangle = new Triangle(point, edge.Point1, edge.Point2);
-                    triangulation.Add(triangle);
-                }
+                this.addTriangle(polygon, point, triangulation);
             }
 
             return triangulation;
         }
 
         /// <summary>
-        /// Finds all white points.
+        ///     Finds all white points.
         /// </summary>
         /// <param name="sourcePicture">The source picture.</param>
         /// <returns>Enumerable collection of all white points</returns>
@@ -117,15 +100,54 @@ namespace GroupCStegafy.Model.DelaunayTriangulation
             {
                 for (var j = 0; j < sourcePicture.Width; j++)
                 {
-                    var pixelColor = PixelManager.GetPixelBgra8(sourcePicture.Pixels, i, j, sourcePicture.Width,
-                        sourcePicture.Height);
-                    if (PixelManager.IsColorWhite(pixelColor))
-                    {
-                        points.Add(new Point(j, i));
-                    }
+                    this.addWhitePoint(sourcePicture, i, j, points);
                 }
             }
 
+            return points;
+        }
+
+        private void addWhitePoint(Picture sourcePicture, int i, int j, List<Point> points)
+        {
+            var pixelColor = PixelManager.GetPixelBgra8(sourcePicture.Pixels, i, j, sourcePicture.Width,
+                sourcePicture.Height);
+            if (PixelManager.IsColorWhite(pixelColor))
+            {
+                points.Add(new Point(j, i));
+            }
+        }
+
+        private void addTriangle(IEnumerable<Edge> polygon, Point point, HashSet<Triangle> triangulation)
+        {
+            foreach (var edge in polygon.Where(possibleEdge =>
+                possibleEdge.Point1 != point && possibleEdge.Point2 != point))
+            {
+                var triangle = new Triangle(point, edge.Point1, edge.Point2);
+                triangulation.Add(triangle);
+            }
+        }
+
+        private void removeBadTriangles(ISet<Triangle> badTriangles)
+        {
+            foreach (var triangle in badTriangles)
+            {
+                foreach (var vertex in triangle.Vertices)
+                {
+                    vertex.AdjacentTriangles.Remove(triangle);
+                }
+            }
+        }
+
+        private List<Point> setupPoints()
+        {
+            var point0 = new Point(0, 0);
+            var point1 = new Point(0, this.MaxY);
+            var point2 = new Point(this.MaxX, this.MaxY);
+            var point3 = new Point(this.MaxX, 0);
+            var points = new List<Point> {point0, point1, point2, point3};
+            var tri1 = new Triangle(point0, point1, point2);
+            var tri2 = new Triangle(point0, point2, point3);
+            this.border = new List<Triangle> {tri1, tri2};
             return points;
         }
 

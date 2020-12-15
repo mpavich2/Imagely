@@ -90,8 +90,7 @@ namespace GroupCStegafy.Model
 
         private void checkForEncryption()
         {
-            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX,
-                ImageConstants.SecondX, this.sourcePicture.Width,
+            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, 0, 1, this.sourcePicture.Width,
                 this.sourcePicture.Height);
             if (HeaderManager.CheckForEncryption(sourcePixelColor) == EncryptionType.Encrypted)
             {
@@ -105,8 +104,7 @@ namespace GroupCStegafy.Model
 
         private void checkBpccValue()
         {
-            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX,
-                ImageConstants.SecondX, this.sourcePicture.Width,
+            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, 0, 1, this.sourcePicture.Width,
                 this.sourcePicture.Height);
             this.bpcc = HeaderManager.CheckBpccValue(sourcePixelColor);
         }
@@ -180,7 +178,7 @@ namespace GroupCStegafy.Model
 
         private void embedBlackPixel(byte[] pixels, Color sourcePixelColor, int i, int j)
         {
-            sourcePixelColor.B = (byte) (sourcePixelColor.B & ~1);
+            sourcePixelColor.B = (byte)(sourcePixelColor.B & ~1);
             PixelManager.SetPixelBgra8(pixels, i, j, sourcePixelColor,
                 this.sourcePicture.Width, this.sourcePicture.Height);
         }
@@ -219,7 +217,7 @@ namespace GroupCStegafy.Model
             {
                 var currentIndex = i;
                 currentIndex -= this.bpcc;
-                if (this.bpcc == ImageConstants.ByteLength)
+                if (this.bpcc == 8)
                 {
                     if (this.changeAllBitsPerColorChannel(pixels, textArray, ref index, currentIndex))
                     {
@@ -259,21 +257,19 @@ namespace GroupCStegafy.Model
         {
             if (index >= textArray.Count)
             {
-                var ret = new byte[pixels.Length / ImageConstants.ByteLength];
-                for (var i = 0; i < pixels.Length; i += ImageConstants.ByteLength)
+                var ret = new byte[pixels.Length / 8];
+                for (var i = 0; i < pixels.Length; i += 8)
                 {
                     var value = 0;
-                    for (var j = 0; j < ImageConstants.ByteLength; j++)
+                    for (var j = 0; j < 8; j++)
                     {
                         if (pixels[i + j])
                         {
-                            value += 1 << (ImageConstants.ByteLength - 1 - j);
+                            value += 1 << (7 - j);
                         }
                     }
-
-                    ret[i / ImageConstants.ByteLength] = (byte) value;
+                    ret[i / 8] = (byte)value;
                 }
-
                 this.updateSourceImage(ret);
                 return true;
             }

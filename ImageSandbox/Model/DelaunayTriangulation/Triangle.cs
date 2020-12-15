@@ -49,10 +49,8 @@ namespace GroupCStegafy.Model.DelaunayTriangulation
                 var neighbors = new HashSet<Triangle>();
                 foreach (var vertex in this.Vertices)
                 {
-                    var trianglesWithSharedEdge = vertex.AdjacentTriangles.Where(o =>
-                    {
-                        return o != this && this.SharesEdgeWith(o);
-                    });
+                    var trianglesWithSharedEdge =
+                        vertex.AdjacentTriangles.Where(o => o != this && this.SharesEdgeWith(o));
                     neighbors.UnionWith(trianglesWithSharedEdge);
                 }
 
@@ -80,7 +78,7 @@ namespace GroupCStegafy.Model.DelaunayTriangulation
                 throw new ArgumentException("Must be 3 distinct points");
             }
 
-            if (!this.IsCounterClockwise(point1, point2, point3))
+            if (!this.isCounterClockwise(point1, point2, point3))
             {
                 this.Vertices[0] = point1;
                 this.Vertices[1] = point3;
@@ -102,6 +100,31 @@ namespace GroupCStegafy.Model.DelaunayTriangulation
         #endregion
 
         #region Methods
+
+        /// <summary>
+        ///     Shareses the edge with.
+        /// </summary>
+        /// <param name="triangle">The triangle.</param>
+        /// <returns></returns>
+        public bool SharesEdgeWith(Triangle triangle)
+        {
+            var sharedVertices = this.Vertices.Count(o => triangle.Vertices.Contains(o));
+            return sharedVertices == 2;
+        }
+
+        /// <summary>
+        ///     Determines whether [is point inside circumcircle] [the specified point].
+        /// </summary>
+        /// <param name="point">The point.</param>
+        /// <returns>
+        ///     <c>true</c> if [is point inside circumcircle] [the specified point]; otherwise, <c>false</c>.
+        /// </returns>
+        public bool IsPointInsideCircumcircle(Point point)
+        {
+            var dSquared = (point.X - this.Circumcenter.X) * (point.X - this.Circumcenter.X) +
+                           (point.Y - this.Circumcenter.Y) * (point.Y - this.Circumcenter.Y);
+            return dSquared < this.RadiusSquared;
+        }
 
         private void updateCircumcircle()
         {
@@ -128,36 +151,11 @@ namespace GroupCStegafy.Model.DelaunayTriangulation
             this.RadiusSquared = (center.X - p0.X) * (center.X - p0.X) + (center.Y - p0.Y) * (center.Y - p0.Y);
         }
 
-        private bool IsCounterClockwise(Point point1, Point point2, Point point3)
+        private bool isCounterClockwise(Point point1, Point point2, Point point3)
         {
             var result = (point2.X - point1.X) * (point3.Y - point1.Y) -
                          (point3.X - point1.X) * (point2.Y - point1.Y);
             return result > 0;
-        }
-
-        /// <summary>
-        ///     Shareses the edge with.
-        /// </summary>
-        /// <param name="triangle">The triangle.</param>
-        /// <returns></returns>
-        public bool SharesEdgeWith(Triangle triangle)
-        {
-            var sharedVertices = this.Vertices.Where(o => triangle.Vertices.Contains(o)).Count();
-            return sharedVertices == 2;
-        }
-
-        /// <summary>
-        ///     Determines whether [is point inside circumcircle] [the specified point].
-        /// </summary>
-        /// <param name="point">The point.</param>
-        /// <returns>
-        ///     <c>true</c> if [is point inside circumcircle] [the specified point]; otherwise, <c>false</c>.
-        /// </returns>
-        public bool IsPointInsideCircumcircle(Point point)
-        {
-            var dSquared = (point.X - this.Circumcenter.X) * (point.X - this.Circumcenter.X) +
-                           (point.Y - this.Circumcenter.Y) * (point.Y - this.Circumcenter.Y);
-            return dSquared < this.RadiusSquared;
         }
 
         #endregion

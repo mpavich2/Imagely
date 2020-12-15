@@ -55,9 +55,8 @@
         <TextBox x:Name="pointsTextBox" Background="#FF2D3136" FontFamily="{StaticResource TahomaFont}" Foreground="{StaticResource DefaultTextColor}" HorizontalAlignment="Left" Margin="702,886,0,0" Text="2000" TextWrapping="Wrap" VerticalAlignment="Top" Width="156" Visibility="Collapsed"/>
         <SymbolIcon x:Name="saveSymbol" Symbol="Save" Height="20" Width="20" Margin="1499,867,0,0" Foreground="{StaticResource SymbolColor}" Tapped="SaveSymbol_Tapped" VerticalAlignment="Top" HorizontalAlignment="Left" PointerEntered="SaveSymbol_PointerEntered" PointerExited="SaveSymbol_PointerExited"/>
         <SymbolIcon x:Name="clearSymbol" Symbol="Clear" Height="20" Width="20" Margin="1499,837,0,0" Foreground="{StaticResource SymbolColor}" Tapped="ClearSymbol_Tapped" VerticalAlignment="Top" HorizontalAlignment="Left" PointerEntered="ClearSymbol_PointerEntered" PointerExited="ClearSymbol_PointerExited"/>
-        <TextBlock HorizontalAlignment="Left" Margin="78,-7,0,0" Text="Imagely" FontFamily="{StaticResource TahomaFont}" FontSize="40" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top"/>
-
-        <NavigationView x:Name="navigationView" Loaded="NavigationView_Loaded" BackRequested="navigationView_OnBackRequested">
+        <TextBlock HorizontalAlignment="Left" Margin="78,-7,0,0" Text="Image Triangulation" FontFamily="{StaticResource TahomaFont}" FontSize="40" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <NavigationView Visibility="Collapsed" x:Name="navigationView" Loaded="NavigationView_Loaded" BackRequested="navigationView_OnBackRequested">
             <NavigationView.MenuItems>
                 <NavigationViewItem Icon="Pictures" Content="Home" Tapped="Home_Tapped" />
                 <NavigationViewItem Icon="Pictures" Content="Image Triangulation Art" Tapped="ImageTriangulationArt_Tapped" />

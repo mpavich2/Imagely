@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
@@ -7,7 +7,6 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using GroupCStegafy.Enums;
 using GroupCStegafy.Model;
 using GroupCStegafy.Viewmodel;
@@ -255,7 +254,7 @@ namespace GroupCStegafy.View
                 }
 
                 this.updateRecentImageTextColor(this.embeddedTextBlock);
-                this.showExtractButton();
+                this.showExtractUi();
                 this.hideAllSettings();
                 this.switchRecentDisplayToImage();
                 this.recentImage.Source = this.EmbeddedPicture.ModifiedImage;
@@ -297,7 +296,7 @@ namespace GroupCStegafy.View
             }
 
             this.updateRecentImageTextColor(this.extractedTextBlock);
-            this.hideExtractButton();
+            this.hideExtractUi();
             this.showDecryptionSettings();
         }
 
@@ -530,11 +529,12 @@ namespace GroupCStegafy.View
             if (this.HiddenFileType == FileType.Picture)
             {
                 this.hideBitsPerColorChannelSettings();
-                this.hideBitsPerColorChannelSettings();
+                this.switchButtonsToImageMode();
             }
             else if (this.HiddenFileType == FileType.Text)
             {
                 this.showBitsPerColorChannelSettings();
+                this.switchButtonsToTextMode();
                 if (this.EncryptionType == EncryptionType.Encrypted)
                 {
                     this.showEncryptionKeywordSettings();
@@ -544,6 +544,18 @@ namespace GroupCStegafy.View
                     this.hideEncryptionKeywordSettings();
                 }
             }
+        }
+
+        private void switchButtonsToTextMode()
+        {
+            this.embedButton.Content = "Embed Text";
+            this.extractButton.Content = "Extract Text";
+        }
+
+        private void switchButtonsToImageMode()
+        {
+            this.embedButton.Content = "Embed Image";
+            this.extractButton.Content = "Extract Image";
         }
 
         private void hideAllSettings()
@@ -564,14 +576,16 @@ namespace GroupCStegafy.View
             this.embedButton.Visibility = Visibility.Collapsed;
         }
 
-        private void showExtractButton()
+        private void showExtractUi()
         {
             this.extractButton.Visibility = Visibility.Visible;
+            this.extractTextBlock.Visibility = Visibility.Visible;
         }
 
-        private void hideExtractButton()
+        private void hideExtractUi()
         {
             this.extractButton.Visibility = Visibility.Collapsed;
+            this.extractTextBlock.Visibility = Visibility.Collapsed;
         }
 
         private void showEncryptionTypeSettings()
@@ -621,8 +635,13 @@ namespace GroupCStegafy.View
         {
             if (this.EncryptionType == EncryptionType.Encrypted)
             {
+                this.extractedSuccessfullyEncryptedTextBlock.Visibility = Visibility.Visible;
                 this.encryptedTextRadioButton.Visibility = Visibility.Visible;
                 this.decryptedTextRadioButton.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                this.extractedSuccessfullyUnencryptedTextBlock.Visibility = Visibility.Visible;
             }
         }
 
@@ -630,6 +649,8 @@ namespace GroupCStegafy.View
         {
             this.encryptedTextRadioButton.Visibility = Visibility.Collapsed;
             this.decryptedTextRadioButton.Visibility = Visibility.Collapsed;
+            this.extractedSuccessfullyUnencryptedTextBlock.Visibility = Visibility.Collapsed;
+            this.extractedSuccessfullyEncryptedTextBlock.Visibility = Visibility.Collapsed;
         }
 
         private void resetTextHoverColor()
@@ -851,36 +872,16 @@ namespace GroupCStegafy.View
         private void resetView()
         {
             this.showDropArea();
-            this.hideEmbeddingView();
-            this.hideExtractingView();
-            this.hideDecryptingView();
+            this.hideAllSettings();
+            this.hideExtractUi();
+            this.hideDecryptionSettings();
             this.dropAreaRectangle.Visibility = Visibility.Visible;
             this.resetImages();
             this.resetTextBlocksColor();
-            this.hideExtractButton();
             this.hideBitsPerColorChannelSettings();
             this.hideEncryptionKeywordSettings();
             this.switchToImageMode();
             this.switchRecentDisplayToImage();
-        }
-
-        private void hideDecryptingView()
-        {
-            this.decryptedTextRadioButton.Visibility = Visibility.Collapsed;
-            this.encryptedTextRadioButton.Visibility = Visibility.Collapsed;
-        }
-
-        private void hideExtractingView()
-        {
-            this.extractButton.Visibility = Visibility.Collapsed;
-        }
-
-        private void hideEmbeddingView()
-        {
-            this.chooseEncryptionTextBlock.Visibility = Visibility.Collapsed;
-            this.encryptedRadioButton.Visibility = Visibility.Collapsed;
-            this.unencryptedRadioButton.Visibility = Visibility.Collapsed;
-            this.embedButton.Visibility = Visibility.Collapsed;
         }
 
         private void resetImages()

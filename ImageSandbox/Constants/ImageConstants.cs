@@ -97,6 +97,14 @@ namespace GroupCStegafy.Constants
         /// </value>
         public static int ColorChannelCount => (int) Application.Current.Resources["ColorChannelCount"];
 
+        /// <summary>
+        /// Gets the default point count.
+        /// </summary>
+        /// <value>
+        /// The default point count.
+        /// </value>
+        public static int DefaultPointCount => (int) Application.Current.Resources["DefaultPointCount"];
+
         #endregion
     }
 }

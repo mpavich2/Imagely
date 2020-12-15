@@ -9,47 +9,16 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid Background="#FF212529" Margin="0,0,-420,-8">
-        <Rectangle Fill="#FF272B2F"  HorizontalAlignment="Left" Height="1108" Margin="1558,0,0,0" VerticalAlignment="Center" Width="362"/>
-        <TextBlock HorizontalAlignment="Left" Margin="78,-7,0,0" Text="Imagely" FontSize="40" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <Border BorderThickness="1" BorderBrush="{StaticResource BorderColor}" HorizontalAlignment="Left" VerticalAlignment="Top"
-                Margin="1588,728,0,0">
-            <FlipView x:Name="triangulationFlipView" Visibility="Visible" Width="300" Height="300" Background="#FF272B2F">
-                <Image Source="../Assets/SampleTriangulation1.png"/>
-                <Image Source="../Assets/SampleTriangulation2.png"/>
-                <Image Source="../Assets/SampleTriangulation3.png"/>
-                <Image Source="../Assets/SampleTriangulation4.png"/>
-            </FlipView>
-        </Border>
-        <TextBlock HorizontalAlignment="Left" Margin="1588,696,0,0" Text="Sample Triangulation Art" TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" FontSize="22"/>
-        <Border BorderThickness="1" BorderBrush="{StaticResource BorderColor}" HorizontalAlignment="Left" VerticalAlignment="Top"
-                Margin="1588,389,0,0">
-            <FlipView x:Name="abstractArtFlipView" Visibility="Visible" Width="300" Height="300" Background="#FF272B2F">
-
-            </FlipView>
-        </Border>
-        <TextBlock HorizontalAlignment="Left" Margin="1588,357,0,0" Text="Sample Abstract Art" TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" FontSize="22"/>
-        <Border BorderThickness="1" BorderBrush="{StaticResource BorderColor}" HorizontalAlignment="Left" VerticalAlignment="Top"
-                Margin="1588,50,0,0">
-            <FlipView x:Name="circleArtFlipView" Visibility="Visible" Width="300" Height="300" Background="#FF272B2F">
-
-            </FlipView>
-        </Border>
-        <TextBlock HorizontalAlignment="Left" Margin="1588,20,0,0" Text="Sample Circlify Art" TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" FontSize="22"/>
-        <TextBlock HorizontalAlignment="Left" Margin="161,391,0,0" Text="Welcome" FontSize="120" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="365,536,0,0" Text="Image Editing Software" FontFamily="{StaticResource TahomaFont}" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top"/>
-        <Rectangle Fill="#FF7597" HorizontalAlignment="Left" Height="1" Margin="197,544,0,0" VerticalAlignment="Top" Width="163"/>
-        <Rectangle Fill="#FF7597" HorizontalAlignment="Left" Height="1" Margin="515,544,0,0" VerticalAlignment="Top" Width="163"/>
-
-        <NavigationView x:Name="navigationView" IsBackButtonVisible="Collapsed" IsPaneOpen="False" Loaded="NavigationView_Loaded">
-            <NavigationView.MenuItems>
-                <NavigationViewItem Icon="Pictures" Content="Home" Tapped="Home_Tapped" />
-                <NavigationViewItem Icon="Pictures" Content="Image Triangulation Art" Tapped="ImageTriangulationArt_Tapped" />
-                <NavigationViewItem Icon="Pictures" Content="Steganography" Tapped="Steganography_Tapped" />
-                <NavigationViewItem Icon="Pictures" Content="Abstract Triangulation Art" Tapped="AbstractTriangulationArt_Tapped" />
-                <NavigationViewItem Icon="Pictures" Content="Paint by Number Generator" Tapped="PaintByNumberGenerator_Tapped" />
-            </NavigationView.MenuItems>
-        </NavigationView>
-        <Image Source="../Assets/ImageManipulatorIcon.png"  HorizontalAlignment="Left" Height="19" VerticalAlignment="Top" Width="19" Margin="10,10,0,0"/>
+    <Grid Background="#FF212529">
+        <TextBlock FontSize="100" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" HorizontalAlignment="Center" Text="Imagely" TextWrapping="Wrap" VerticalAlignment="Top" Margin="0,270,0,0"/>
+        <TextBlock HorizontalAlignment="Center" Margin="0,396,0,0" Text="Image Editing Software" FontFamily="{StaticResource TahomaFont}" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <Rectangle Fill="#FF7597" HorizontalAlignment="Left" Height="1" Margin="719,405,0,0" VerticalAlignment="Top" Width="163"/>
+        <Rectangle Fill="#FF7597" HorizontalAlignment="Left" Height="1" Margin="1037,405,0,0" VerticalAlignment="Top" Width="163"/>
+        <TextBlock x:Name="steganographyTextBlock" FontSize="25" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" HorizontalAlignment="Center" Text="Steganography" TextWrapping="Wrap" VerticalAlignment="Center" Tapped="steganographyTextBlock_Tapped" PointerEntered="steganographyTextBlock_OnPointerEntered" PointerExited="steganographyTextBlock_OnPointerExited"/>
+        <TextBlock x:Name="imageTriangulationTextBlock" FontSize="25" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" HorizontalAlignment="Left" Text="Image Triangulation" TextWrapping="Wrap" VerticalAlignment="Center" Margin="1119,0,0,0" Tapped="imageTriangulationTextBlock_Tapped" PointerEntered="imageTriangulationTextBlock_OnPointerEntered" PointerExited="imageTriangulationTextBlock_OnPointerExited"/>
+        <TextBlock x:Name="abstractTriangulationTextBlock" FontSize="25" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" HorizontalAlignment="Left" Text="Abstract Triangulation" TextWrapping="Wrap" VerticalAlignment="Center" Margin="519,0,0,0" Tapped="abstractTriangulationTextBlock_Tapped" PointerEntered="abstractTriangulationTextBlock_OnPointerEntered" PointerExited="abstractTriangulationTextBlock_OnPointerExited"/>
+        <Rectangle x:Name="steganographyUnderline" Visibility="Collapsed" Fill="#FF7597" HorizontalAlignment="Center" Height="1" Margin="0,560,0,0" VerticalAlignment="Top" Width="191"/>
+        <Rectangle x:Name="imageTriangulationUnderline" Visibility="Collapsed" Fill="#FF7597" HorizontalAlignment="Left" Height="1" Margin="1119,560,0,0" VerticalAlignment="Top" Width="257"/>
+        <Rectangle x:Name="abstractTriangulationUnderline" Visibility="Collapsed" Fill="#FF7597" HorizontalAlignment="Left" Height="1" Margin="519,560,0,0" VerticalAlignment="Top" Width="281"/>
     </Grid>
 </Page>

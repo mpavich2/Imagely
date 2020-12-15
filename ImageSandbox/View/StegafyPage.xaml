@@ -19,7 +19,7 @@
                     <Image x:Name="hiddenImage" Height="300" Width="300" PointerEntered="HiddenImage_PointerEntered" PointerExited="HiddenImage_PointerExited" Tapped="HiddenImage_Tapped"/>
                 </Border>
                 <Border BorderThickness="1" BorderBrush="{StaticResource BorderColor}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,381,0,0">
-                    <TextBox x:Name="hiddenTextBox" BorderThickness="0" Height="300" Width="300" Visibility=" Collapsed" IsReadOnly="True" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                    <TextBox x:Name="hiddenTextBox" BorderThickness="0" Height="300" Width="300" Visibility=" Collapsed" IsReadOnly="True" TextWrapping="Wrap"/>
                 </Border>
                 <TextBlock x:Name="hiddenTextBlock" HorizontalAlignment="Left" Text="Hidden Image" TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" FontSize="22" Margin="30,349,0,0"/>
                 <Border BorderThickness="1" BorderBrush="{StaticResource BorderColor}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,720,0,0">
@@ -30,22 +30,18 @@
                     <Image x:Name="extractedImage" Height="300" Width="300" PointerEntered="ExtractedImage_PointerEntered" PointerExited="ExtractedImage_PointerExited" Tapped="ExtractedImage_Tapped"/>
                 </Border>
                 <Border BorderThickness="1" BorderBrush="{StaticResource BorderColor}" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,1059,0,0">
-                    <TextBox x:Name="extractedTextBox" BorderThickness="0" Height="300" Width="300" Visibility=" Collapsed" IsReadOnly="True" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+                    <TextBox x:Name="extractedTextBox" BorderThickness="0" Height="300" Width="300" Visibility=" Collapsed" IsReadOnly="True" TextWrapping="Wrap"/>
                 </Border>
                 <TextBlock x:Name="extractedTextBlock" HorizontalAlignment="Left" Text="Extracted Image" TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" FontSize="22" Margin="30,1027,0,0"/>
                 <Rectangle x:Name="hiddenTextOverlay" Fill="Transparent" HorizontalAlignment="Center" Height="300" Margin="0,382,0,0" VerticalAlignment="Top" Width="300" Tapped="HiddenTextBox_Tapped" PointerEntered="HiddenTextBox_PointerEntered" PointerExited="HiddenTextBox_PointerExited"/>
                 <Rectangle x:Name="extractedTextOverlay" Fill="Transparent" HorizontalAlignment="Center" Height="300" Margin="0,1060,0,0" VerticalAlignment="Top" Width="300" Tapped="ExtractedTextBox_Tapped" PointerEntered="ExtractedTextBox_PointerEntered" PointerExited="ExtractedTextBox_PointerExited"/>
             </Grid>
         </ScrollViewer>
-        <TextBlock HorizontalAlignment="Left" Margin="78,-7,0,0" Text="Imagely" FontSize="40" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="78,-7,0,0" Text="Steganography" FontSize="40" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top"/>
 
         <Border BorderThickness="1" BorderBrush="{StaticResource BorderColor}" HorizontalAlignment="Left" VerticalAlignment="Top"
                 Margin="78,46,0,0">
             <Image x:Name="recentImage" HorizontalAlignment="Center" Height="736" VerticalAlignment="Center" Width="1450" />
-        </Border>
-        <Border BorderThickness="1" BorderBrush="{StaticResource BorderColor}" HorizontalAlignment="Left" VerticalAlignment="Top"
-                Margin="78,46,0,0">
-            <TextBox x:Name="recentTextBox" BorderBrush="Transparent" Height="736" Width="1450" Background="#FF272B2F" Visibility="Collapsed" IsReadOnly="True" TextWrapping="Wrap" />
         </Border>
         <Border BorderThickness="1" BorderBrush="{StaticResource BorderColor}" HorizontalAlignment="Left" VerticalAlignment="Top"
                 Margin="78,826,0,0">
@@ -55,22 +51,29 @@
         <TextBlock x:Name="dragAndDropTextBlock" HorizontalAlignment="Left" TextAlignment="Center" Margin="555,875,0,0" Text="Drag and Drop Image Here" FontFamily="{StaticResource TahomaFont}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top" Width="500"/>
         <TextBlock x:Name="orTextBlock" HorizontalAlignment="Left" Margin="793,909,0,0" Text="or" FontFamily="{StaticResource TahomaFont}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top"/>
         <Button x:Name="browseFilesButton" Content="Browse Files" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Margin="750,949,0,0" VerticalAlignment="Top" Click="BrowseFilesButton_Click"/>
-        <TextBlock x:Name="chooseEncryptionTextBlock" HorizontalAlignment="Left" Margin="673,864,0,0" Text="Choose Encyrption Type" FontFamily="{StaticResource TahomaFont}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top" Visibility="Collapsed"/>
+        <TextBlock x:Name="chooseEncryptionTextBlock" HorizontalAlignment="Left" Margin="673,864,0,0" Text="Choose Encryption Type" FontFamily="{StaticResource TahomaFont}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top" Visibility="Collapsed"/>
         <RadioButton x:Name="encryptedRadioButton" Content="Encrypted" Margin="744,896,0,0" VerticalAlignment="Top" GroupName="encryptionRadioButtonGroup" Visibility="Collapsed" Checked="EncryptedRadioButton_Checked" IsChecked="True" />
         <RadioButton x:Name="unencryptedRadioButton" Content="Unencrypted" Margin="744,928,0,0" VerticalAlignment="Top" GroupName="encryptionRadioButtonGroup" Visibility="Collapsed" Checked="UnencryptedRadioButton_Checked"/>
-        <Button x:Name="embedButton" Content="Embed Image" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="744,960,0,0" VerticalAlignment="Top" Width="123" Visibility="Collapsed" Click="EmbedButton_Click"/>
+        <Button x:Name="embedButton" Content="Embed Image" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="744,960,0,0" VerticalAlignment="Top" Width="123" MinWidth="123" Visibility="Collapsed" Click="EmbedButton_Click"/>
         <TextBlock x:Name="chooseBpccAmountTextBlock" HorizontalAlignment="Left" Margin="163,864,0,0" Text="Choose Bits Per Color Channel Amount" FontFamily="{StaticResource TahomaFont}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top" Visibility="Collapsed"/>
         <TextBlock x:Name="chooseKeywordTextBlock" HorizontalAlignment="Left" Margin="1021,864,0,0" Text="Choose Encryption Keyword" FontFamily="{StaticResource TahomaFont}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top" Visibility="Collapsed"/>
         <Slider x:Name="bpccSlider" HorizontalAlignment="Left" Margin="288,898,0,0" VerticalAlignment="Top" Width="150" Maximum="8" Value="1" Minimum="1" TickPlacement="None" IsThumbToolTipEnabled="False" ValueChanged="BpccSlider_ValueChanged" Visibility="Collapsed"/>
         <TextBlock x:Name="bpccValueTextBlock" HorizontalAlignment="Left" Margin="452,899,0,0" Text="{Binding ElementName=bpccSlider,Path=Value}" FontFamily="{StaticResource TahomaFont}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top" Visibility="Collapsed"/>
         <TextBox x:Name="keywordTextBox" BorderThickness="1" HorizontalAlignment="Left" Margin="1101,898,0,0"  TextWrapping="Wrap" VerticalAlignment="Top" Width="150" PlaceholderText="Enter Keyword" Visibility="Collapsed"/>
-        <Button x:Name="extractButton" Content="Extract Image" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="741,911,0,0" VerticalAlignment="Top" Width="127" Visibility="Collapsed" Click="ExtractButton_Click"/>
-        <RadioButton x:Name="encryptedTextRadioButton" Content="Encrypted Text" Margin="744,895,0,0" VerticalAlignment="Top" Checked="EncryptedTextRadioButton_Checked" GroupName="extractedTextRadioButtons" Width="155" Visibility="Collapsed" IsChecked="True"/>
-        <RadioButton x:Name="decryptedTextRadioButton" Content="Decrypted Text" Margin="744,927,0,0" VerticalAlignment="Top" GroupName="extractedTextRadioButtons" Checked="DecryptedTextRadioButton_Checked" Visibility="Collapsed"/>
+        <TextBlock x:Name="extractTextBlock" Visibility="Collapsed" HorizontalAlignment="Left" Margin="710,895,0,0" Text="Extraction Ready" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="{StaticResource DefaultTextColor}" FontFamily="{StaticResource TahomaFont}" FontSize="22" FontWeight="Bold"/>
+        <Button x:Name="extractButton" Content="Extract Image" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" HorizontalContentAlignment="Center" Margin="741,927,0,0" VerticalAlignment="Top" Width="127" MinWidth="127" Visibility="Collapsed" Click="ExtractButton_Click"/>
+        <RadioButton x:Name="encryptedTextRadioButton" Content="Encrypted Text" Margin="744,908,0,0" VerticalAlignment="Top" Checked="EncryptedTextRadioButton_Checked" GroupName="extractedTextRadioButtons" Width="155" Visibility="Collapsed" IsChecked="True"/>
+        <RadioButton x:Name="decryptedTextRadioButton" Content="Decrypted Text" Margin="744,940,0,0" VerticalAlignment="Top" GroupName="extractedTextRadioButtons" Checked="DecryptedTextRadioButton_Checked" Visibility="Collapsed"/>
         <Rectangle Fill="Transparent" HorizontalAlignment="Left" Height="738" Margin="79,46,0,0" VerticalAlignment="Top" Width="1451"/>
         <SymbolIcon x:Name="saveSymbol" Symbol="Save" Height="20" Width="20" Margin="1499,867,0,0" Foreground="{StaticResource SymbolColor}" Tapped="SaveSymbol_Tapped" VerticalAlignment="Top" HorizontalAlignment="Left" PointerEntered="SaveSymbol_PointerEntered" PointerExited="SaveSymbol_PointerExited"/>
         <SymbolIcon x:Name="clearSymbol" Symbol="Clear" Height="20" Width="20" Margin="1499,837,0,0" Foreground="{StaticResource SymbolColor}" Tapped="ClearSymbol_Tapped" VerticalAlignment="Top" HorizontalAlignment="Left" PointerEntered="ClearSymbol_PointerEntered" PointerExited="ClearSymbol_PointerExited"/>
-        <NavigationView x:Name="navigationView" IsPaneOpen="False" Loaded="NavigationView_Loaded" Visibility="Visible" BackRequested="navigationView_OnBackRequested" >
+        <TextBlock x:Name="extractedSuccessfullyEncryptedTextBlock" Visibility="Collapsed" HorizontalAlignment="Left" Margin="680,881,0,0" Text="Extracted Successfully" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="{StaticResource DefaultTextColor}" FontFamily="{StaticResource TahomaFont}" FontSize="22" FontWeight="Bold"/>
+        <TextBlock x:Name="extractedSuccessfullyUnencryptedTextBlock" Visibility="Collapsed" HorizontalAlignment="Left" Margin="680,914,0,0" Text="Extracted Successfully" TextWrapping="Wrap" VerticalAlignment="Top" Foreground="{StaticResource DefaultTextColor}" FontFamily="{StaticResource TahomaFont}" FontSize="22" FontWeight="Bold"/>
+        <Border BorderThickness="1" BorderBrush="{StaticResource BorderColor}" HorizontalAlignment="Left" VerticalAlignment="Top"
+                Margin="78,46,0,0">
+            <TextBox x:Name="recentTextBox" BorderBrush="Transparent" Height="736" Width="1450" Background="#FF272B2F" Visibility="Collapsed" IsReadOnly="True" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Visible" />
+        </Border>
+        <NavigationView x:Name="navigationView" IsPaneOpen="False" Loaded="NavigationView_Loaded" BackRequested="navigationView_OnBackRequested" >
             <NavigationView.MenuItems>
                 <NavigationViewItem Icon="Pictures" Content="Home" Tapped="Home_Tapped" />
                 <NavigationViewItem Icon="Pictures" Content="Image Triangulation Art" Tapped="ImageTriangulationArt_Tapped" />

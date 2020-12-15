@@ -170,9 +170,6 @@
     <Compile Include="View\Dialogs\NoHiddenMessageDialog.xaml.cs">
       <DependentUpon>NoHiddenMessageDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\NewHomePage.xaml.cs">
-      <DependentUpon>NewHomePage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="View\StegafyPage.xaml.cs">
       <DependentUpon>StegafyPage.xaml</DependentUpon>
     </Compile>
@@ -286,10 +283,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\Dialogs\NoHiddenMessageDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="View\NewHomePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
