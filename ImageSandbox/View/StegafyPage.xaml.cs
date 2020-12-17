@@ -31,6 +31,10 @@ namespace GroupCStegafy.View
         private const string EncryptedTextDisplay = "Encrypted Text";
         private const string DecryptedTextDisplay = "Decrypted Text";
         private const string DropTextDisplay = "Drop File Here";
+        private const string EmbedTextDisplay = "Embed Text";
+        private const string ExtractTextDisplay = "Extract Text";
+        private const string EmbedImageDisplay = "Embed Image";
+        private const string ExtractImageDisplay = "Extract Image";
 
         private readonly StegafyPageViewModel viewModel;
         private readonly TextBlock[] textBlocks;
@@ -302,6 +306,7 @@ namespace GroupCStegafy.View
             {
                 return false;
             }
+
             if (this.HiddenFileType == FileType.Text)
             {
                 this.hiddenTextBox.Text = this.HiddenText;
@@ -510,14 +515,14 @@ namespace GroupCStegafy.View
 
         private void switchButtonsToTextMode()
         {
-            this.embedButton.Content = "Embed Text";
-            this.extractButton.Content = "Extract Text";
+            this.embedButton.Content = EmbedTextDisplay;
+            this.extractButton.Content = ExtractTextDisplay;
         }
 
         private void switchButtonsToImageMode()
         {
-            this.embedButton.Content = "Embed Image";
-            this.extractButton.Content = "Extract Image";
+            this.embedButton.Content = EmbedImageDisplay;
+            this.extractButton.Content = ExtractImageDisplay;
         }
 
         private void hideAllSettings()
@@ -806,9 +811,13 @@ namespace GroupCStegafy.View
 
         private async void SaveSymbol_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (this.recentImage.Source != null)
+            if (this.recentImage.Source != null && this.recentImage.Visibility == Visibility.Visible)
             {
                 await this.viewModel.SaveImage(this.recentImage);
+            }
+            else if (this.recentTextBox.Text != string.Empty && this.recentTextBox.Visibility == Visibility.Visible)
+            {
+                this.viewModel.SaveText(this.recentTextBox.Text);
             }
         }
 
@@ -868,7 +877,7 @@ namespace GroupCStegafy.View
 
         private void SaveSymbol_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            this.saveSymbol.Foreground = (Brush)Application.Current.Resources["SymbolHoverColor"];
+            this.saveSymbol.Foreground = (Brush) Application.Current.Resources["SymbolHoverColor"];
         }
 
         private void SaveSymbol_PointerExited(object sender, PointerRoutedEventArgs e)
@@ -878,13 +887,13 @@ namespace GroupCStegafy.View
 
         private void resetSymbolColors()
         {
-            this.clearSymbol.Foreground = (Brush)Application.Current.Resources["SymbolColor"];
-            this.saveSymbol.Foreground = (Brush)Application.Current.Resources["SymbolColor"];
+            this.clearSymbol.Foreground = (Brush) Application.Current.Resources["SymbolColor"];
+            this.saveSymbol.Foreground = (Brush) Application.Current.Resources["SymbolColor"];
         }
 
         private void ClearSymbol_PointerEntered(object sender, PointerRoutedEventArgs e)
         {
-            this.clearSymbol.Foreground = (Brush)Application.Current.Resources["SymbolHoverColor"];
+            this.clearSymbol.Foreground = (Brush) Application.Current.Resources["SymbolHoverColor"];
         }
 
         private void ClearSymbol_PointerExited(object sender, PointerRoutedEventArgs e)
@@ -894,9 +903,9 @@ namespace GroupCStegafy.View
 
         private void navigationView_OnBackRequested(NavigationView sender, NavigationViewBackRequestedEventArgs args)
         {
-            if (this.Frame.CanGoBack)
+            if (Frame.CanGoBack)
             {
-                this.Frame.GoBack();
+                Frame.GoBack();
             }
         }
 

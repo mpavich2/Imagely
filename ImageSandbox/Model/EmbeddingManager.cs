@@ -18,6 +18,7 @@ namespace GroupCStegafy.Model
 
         private bool isEncrypted;
         private int bpcc;
+
         private readonly int byteLength = ImageConstants.ByteLength;
         private readonly string endOfText = ImageConstants.EndOfText;
 
@@ -90,7 +91,8 @@ namespace GroupCStegafy.Model
 
         private void checkForEncryption()
         {
-            var sourcePixelColor = PixelUtilities.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX, ImageConstants.SecondX, this.sourcePicture.Width,
+            var sourcePixelColor = PixelUtilities.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX,
+                ImageConstants.SecondX, this.sourcePicture.Width,
                 this.sourcePicture.Height);
             if (HeaderManager.CheckForEncryption(sourcePixelColor) == EncryptionType.Encrypted)
             {
@@ -104,7 +106,8 @@ namespace GroupCStegafy.Model
 
         private void checkBpccValue()
         {
-            var sourcePixelColor = PixelUtilities.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX, ImageConstants.SecondX, this.sourcePicture.Width,
+            var sourcePixelColor = PixelUtilities.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX,
+                ImageConstants.SecondX, this.sourcePicture.Width,
                 this.sourcePicture.Height);
             this.bpcc = HeaderManager.CheckBpccValue(sourcePixelColor);
         }
@@ -184,7 +187,7 @@ namespace GroupCStegafy.Model
 
         private void embedBlackPixel(byte[] pixels, Color sourcePixelColor, int i, int j)
         {
-            sourcePixelColor.B = (byte)(sourcePixelColor.B & ~1);
+            sourcePixelColor.B = (byte) (sourcePixelColor.B & ~1);
             PixelUtilities.SetPixelBgra8(pixels, i, j, sourcePixelColor,
                 this.sourcePicture.Width, this.sourcePicture.Height);
         }
@@ -271,11 +274,13 @@ namespace GroupCStegafy.Model
                     {
                         if (pixels[i + j])
                         {
-                            value += 1 << ((this.byteLength - 1) - j);
+                            value += 1 << (this.byteLength - 1 - j);
                         }
                     }
-                    ret[i / this.byteLength] = (byte)value;
+
+                    ret[i / this.byteLength] = (byte) value;
                 }
+
                 this.updateSourceImage(ret);
                 return true;
             }

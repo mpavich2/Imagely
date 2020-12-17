@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
-using Windows.Graphics.Imaging;
 using Windows.Storage;
 using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 using GroupCStegafy.Model;
 using GroupCStegafy.Model.DelaunayTriangulation;
@@ -77,6 +74,7 @@ namespace GroupCStegafy.Viewmodel
             {
                 return false;
             }
+
             var copyBitmapImage = await FileUtilities.MakeCopyOfTheImage(sourceImageFile);
             await PictureUtilities.LoadImageData(this.SourcePicture, sourceImageFile, copyBitmapImage);
             return true;
@@ -104,7 +102,7 @@ namespace GroupCStegafy.Viewmodel
         /// <summary>
         ///     Applies the sobel filter.
         /// </summary>
-        public void applySobelFilter()
+        public void ApplySobelFilter()
         {
             var sobelFilter = new SobelFilter(this.CopiedPicture);
             sobelFilter.applySobelFilter();
@@ -113,7 +111,7 @@ namespace GroupCStegafy.Viewmodel
         /// <summary>
         ///     Applies the grayscale filter.
         /// </summary>
-        public void applyGrayscaleFilter()
+        public void ApplyGrayscaleFilter()
         {
             this.copySourcePicture();
             var grayscaleFilter = new GrayscaleFilter(this.CopiedPicture);
@@ -126,21 +124,7 @@ namespace GroupCStegafy.Viewmodel
         /// <param name="image">The image.</param>
         public async Task SaveImage(Image image)
         {
-            var renderTargetBitmap = new RenderTargetBitmap();
-            await renderTargetBitmap.RenderAsync(image);
-            var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
-            var pixels = pixelBuffer.ToArray();
-            var writableBitmap = new WriteableBitmap(renderTargetBitmap.PixelWidth, renderTargetBitmap.PixelHeight);
-            using (var stream = writableBitmap.PixelBuffer.AsStream())
-            {
-                await stream.WriteAsync(pixels, 0, pixels.Length);
-            }
-
-            var picture = new Picture {
-                ModifiedImage = writableBitmap,
-                Width = (uint) renderTargetBitmap.PixelWidth,
-                Height = (uint) renderTargetBitmap.PixelHeight
-            };
+            var picture = await PictureUtilities.ConvertImageToPicture(image);
             FileUtilities.SaveImage(picture);
         }
 
@@ -184,7 +168,7 @@ namespace GroupCStegafy.Viewmodel
         /// <param name="pointsText">The points text.</param>
         public void DrawAbstractTriangleArt(Canvas canvas, string pointsText)
         {
-            //TODO refactor the hell out of this if keeping
+            //TODO move this to the abstract triangulation page when it is created
             var pointCount = int.Parse(pointsText);
             var points = this.delaunay.GeneratePoints(this.CopiedPicture, pointCount, this.CopiedPicture.Width,
                 this.CopiedPicture.Height);
@@ -237,27 +221,27 @@ namespace GroupCStegafy.Viewmodel
         private void drawTriangle(Canvas canvas, Triangle triangle)
         {
             var polygon = this.createPolygonFromTriangle(triangle);
-
-            if (polygon.Points != null)
-            {
-                this.colorPolygon(polygon);
-                canvas.Children.Add(polygon);
-            }
+            this.colorPolygon(polygon);
+            canvas.Children.Add(polygon);
         }
 
         private void colorPolygon(Polygon polygon)
         {
-            var maxX = polygon.Points.Max(point => point.X);
-            var maxY = polygon.Points.Max(point => point.Y);
-            var minX = polygon.Points.Min(point => point.X);
-            var minY = polygon.Points.Min(point => point.Y);
-            var firstPoint = new Model.DelaunayTriangulation.Point(minX, minY);
-            var secondPoint = new Model.DelaunayTriangulation.Point(maxX, maxY);
-            var averageColor = PixelUtilities.GetAverageColor(this.SourcePicture, firstPoint, secondPoint);
+            if (polygon.Points != null)
+            {
+                var maxX = polygon.Points.Max(point => point.X);
+                var maxY = polygon.Points.Max(point => point.Y);
+                var minX = polygon.Points.Min(point => point.X);
+                var minY = polygon.Points.Min(point => point.Y);
+                var firstPoint = new Model.DelaunayTriangulation.Point(minX, minY);
+                var secondPoint = new Model.DelaunayTriangulation.Point(maxX, maxY);
+                var averageColor = PixelUtilities.GetAverageColor(this.SourcePicture, firstPoint, secondPoint);
 
-            Brush brush = new SolidColorBrush(averageColor);
-            polygon.Fill = brush;
-            polygon.Stroke = brush;
+                Brush brush = new SolidColorBrush(averageColor);
+                polygon.Fill = brush;
+                polygon.Stroke = brush;
+            }
+
             polygon.StrokeThickness = 1.0;
         }
 

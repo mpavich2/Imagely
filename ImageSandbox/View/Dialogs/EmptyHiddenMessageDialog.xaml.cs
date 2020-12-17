@@ -5,17 +5,17 @@
 namespace GroupCStegafy.View.Dialogs
 {
     /// <summary>
-    ///     Defines the InvalidHiddenImageDialog Content Dialog class.
+    ///     The empty hidden message content dialog to display an error message.
     /// </summary>
     /// <seealso cref="Windows.UI.Xaml.Controls.ContentDialog" />
-    public sealed partial class InvalidHiddenImageDialog
+    public sealed partial class EmptyHiddenMessageDialog
     {
         #region Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="InvalidHiddenImageDialog" /> class.
+        ///     Initializes a new instance of the <see cref="EmptyHiddenMessageDialog" /> class.
         /// </summary>
-        public InvalidHiddenImageDialog()
+        public EmptyHiddenMessageDialog()
         {
             this.InitializeComponent();
         }

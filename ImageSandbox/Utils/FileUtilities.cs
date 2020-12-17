@@ -55,24 +55,6 @@ namespace GroupCStegafy.Utils
         }
 
         /// <summary>
-        ///     Selects the text file.
-        /// </summary>
-        /// <returns>
-        ///     Selected file
-        /// </returns>
-        public static async Task<StorageFile> SelectTextFile()
-        {
-            var openPicker = new FileOpenPicker {
-                ViewMode = PickerViewMode.Thumbnail,
-                SuggestedStartLocation = PickerLocationId.DocumentsLibrary
-            };
-            openPicker.FileTypeFilter.Add(".txt");
-            var file = await openPicker.PickSingleFileAsync();
-
-            return file;
-        }
-
-        /// <summary>
         ///     Makes the copy of the image.
         /// </summary>
         /// <param name="imageFile">The image file.</param>
@@ -88,7 +70,7 @@ namespace GroupCStegafy.Utils
         }
 
         /// <summary>
-        ///     Saves the text.
+        ///     Saves the text to a file.
         /// </summary>
         /// <param name="text">The text.</param>
         public static async void SaveText(string text)
@@ -109,7 +91,7 @@ namespace GroupCStegafy.Utils
         }
 
         /// <summary>
-        ///     Saves the Image
+        ///     Saves the Image to a file.
         /// </summary>
         /// <param name="picture">The picture.</param>
         public static async void SaveImage(Picture picture)

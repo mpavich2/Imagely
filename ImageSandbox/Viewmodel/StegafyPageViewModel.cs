@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Graphics.Imaging;
@@ -168,6 +167,7 @@ namespace GroupCStegafy.Viewmodel
             {
                 return false;
             }
+
             var copyBitmapImage = await FileUtilities.MakeCopyOfTheImage(sourceImageFile);
             await PictureUtilities.LoadImageData(this.SourcePicture, sourceImageFile, copyBitmapImage);
             return true;
@@ -193,6 +193,12 @@ namespace GroupCStegafy.Viewmodel
             else
             {
                 this.HiddenText = await FileIO.ReadTextAsync(hiddenFile);
+                if (this.HiddenText == string.Empty)
+                {
+                    value = false;
+                    await this.showEmptyHiddenMessageDialog();
+                }
+
                 this.HiddenFileType = FileType.Text;
             }
 
@@ -215,22 +221,17 @@ namespace GroupCStegafy.Viewmodel
         /// <param name="image">The image.</param>
         public async Task SaveImage(Image image)
         {
-            var renderTargetBitmap = new RenderTargetBitmap();
-            await renderTargetBitmap.RenderAsync(image);
-            var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
-            var pixels = pixelBuffer.ToArray();
-            var writableBitmap = new WriteableBitmap(renderTargetBitmap.PixelWidth, renderTargetBitmap.PixelHeight);
-            using (var stream = writableBitmap.PixelBuffer.AsStream())
-            {
-                await stream.WriteAsync(pixels, 0, pixels.Length);
-            }
-
-            var picture = new Picture {
-                ModifiedImage = writableBitmap,
-                Width = (uint) renderTargetBitmap.PixelWidth,
-                Height = (uint) renderTargetBitmap.PixelHeight
-            };
+            var picture = await PictureUtilities.ConvertImageToPicture(image);
             FileUtilities.SaveImage(picture);
+        }
+
+        /// <summary>
+        ///     Saves the text to a file.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        public void SaveText(string text)
+        {
+            FileUtilities.SaveText(text);
         }
 
         /// <summary>
@@ -379,7 +380,7 @@ namespace GroupCStegafy.Viewmodel
 
                 if (sourceImageFile != null)
                 {
-                    await PictureUtilities.LoadImageData(this.SourcePicture, sourceImageFile, copyBitmapImage);
+                    await PictureUtilities.LoadImageData(picture, sourceImageFile, copyBitmapImage);
                 }
             }
 
@@ -392,6 +393,7 @@ namespace GroupCStegafy.Viewmodel
             {
                 return false;
             }
+
             var copyBitmapImage = await FileUtilities.MakeCopyOfTheImage(hiddenImageFile);
             await PictureUtilities.LoadImageData(this.HiddenPicture, hiddenImageFile, copyBitmapImage);
 
@@ -501,7 +503,7 @@ namespace GroupCStegafy.Viewmodel
                 }
             }
 
-            return 9;
+            return ImageConstants.ByteLength + 1;
         }
 
         private string adjustMessageCantFitText(IReadOnlyCollection<char> text, IReadOnlyCollection<bool> pixels)
@@ -528,17 +530,23 @@ namespace GroupCStegafy.Viewmodel
             await dialog.ShowAsync();
         }
 
+        private async Task showEmptyHiddenMessageDialog()
+        {
+            var dialog = new EmptyHiddenMessageDialog();
+            await dialog.ShowAsync();
+        }
+
         private async Task showMessageCantFitDialog(IReadOnlyCollection<char> text, IReadOnlyCollection<bool> pixels)
         {
             var dialog = new InvalidMessageLengthDialog();
             if (this.numNecessaryBits(text, pixels) == ImageConstants.ByteLength + 1)
             {
-                dialog.setErrorMessageText(MessageTooLongText);
+                dialog.SetErrorMessageText(MessageTooLongText);
                 this.IsHiddenTextTooBig = true;
             }
             else
             {
-                dialog.setErrorMessageText(this.adjustMessageCantFitText(text, pixels));
+                dialog.SetErrorMessageText(this.adjustMessageCantFitText(text, pixels));
             }
 
             await dialog.ShowAsync();

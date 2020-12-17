@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Windows.UI;
 using GroupCStegafy.Model;
-using Color = Windows.UI.Color;
-using Point = GroupCStegafy.Model.DelaunayTriangulation.Point;
+using GroupCStegafy.Model.DelaunayTriangulation;
 
 namespace GroupCStegafy.Utils
 {
@@ -45,7 +45,7 @@ namespace GroupCStegafy.Utils
         /// <param name="height">The height.</param>
         public static void SetPixelBgra8(byte[] pixels, int x, int y, Color color, uint width, uint height)
         {
-            var offset = (x * (int)width + y) * 4;
+            var offset = (x * (int) width + y) * 4;
             pixels[offset + 2] = color.R;
             pixels[offset + 1] = color.G;
             pixels[offset + 0] = color.B;
@@ -77,11 +77,11 @@ namespace GroupCStegafy.Utils
         }
 
         /// <summary>
-        /// Determines whether [is color white] [the specified pixel color].
+        ///     Determines whether [is color white] [the specified pixel color].
         /// </summary>
         /// <param name="pixelColor">Color of the pixel.</param>
         /// <returns>
-        ///   <c>true</c> if [is color white] [the specified pixel color]; otherwise, <c>false</c>.
+        ///     <c>true</c> if [is color white] [the specified pixel color]; otherwise, <c>false</c>.
         /// </returns>
         public static bool IsColorWhite(Color pixelColor)
         {
@@ -89,7 +89,7 @@ namespace GroupCStegafy.Utils
         }
 
         /// <summary>
-        /// Gets the average color.
+        ///     Gets the average color.
         /// </summary>
         /// <param name="picture">The picture.</param>
         /// <param name="firstPoint">The first point.</param>
@@ -104,7 +104,8 @@ namespace GroupCStegafy.Utils
             {
                 for (var j = firstPoint.Y; j < secondPoint.Y; j++)
                 {
-                    var pixelColor = GetPixelBgra8(picture.Pixels, Convert.ToInt32(j), Convert.ToInt32(i), picture.Width,
+                    var pixelColor = GetPixelBgra8(picture.Pixels, Convert.ToInt32(j), Convert.ToInt32(i),
+                        picture.Width,
                         picture.Height);
                     rValues.Add(pixelColor.R);
                     gValues.Add(pixelColor.G);

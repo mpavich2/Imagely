@@ -179,7 +179,6 @@ namespace GroupCStegafy.Model
 
         private void setFirstPixel(Color pixelColor, byte[] imageWithHeader)
         {
-            //TODO change magic numbers
             pixelColor.R = (byte) ImageConstants.HiddenMessageValue;
             pixelColor.G = (byte) ImageConstants.HiddenMessageValue;
             pixelColor.B = (byte) ImageConstants.HiddenMessageValue;

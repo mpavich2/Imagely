@@ -85,6 +85,7 @@ namespace GroupCStegafy.View
             {
                 return;
             }
+
             using (var writeStream = picture.ModifiedImage.PixelBuffer.AsStream())
             {
                 await writeStream.WriteAsync(picture.Pixels, 0,
@@ -116,8 +117,8 @@ namespace GroupCStegafy.View
 
         private async Task applySobelAndGrayScale()
         {
-            this.viewModel.applyGrayscaleFilter();
-            this.viewModel.applySobelFilter();
+            this.viewModel.ApplyGrayscaleFilter();
+            this.viewModel.ApplySobelFilter();
             await this.writePictureToImage(this.ModifiedPicture, this.sobelImage);
         }
 

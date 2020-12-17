@@ -13,9 +13,9 @@ namespace GroupCStegafy.Model
     {
         #region Data members
 
-        private const int END_OF_TEXT = 3;
-        private const int BEGINNING_OF_TEXT = 2;
-        private const int END_OF_KEY = 1;
+        private const int EndOfText = 3;
+        private const int BeginningOfText = 2;
+        private const int EndOfKey = 1;
 
         private readonly Picture sourcePicture;
         private int bpcc;
@@ -304,7 +304,7 @@ namespace GroupCStegafy.Model
 
         private void checkIfPassedKey()
         {
-            if (this.endOfTextCharactersPassed >= BEGINNING_OF_TEXT && this.IsEncrypted() == EncryptionType.Encrypted)
+            if (this.endOfTextCharactersPassed >= BeginningOfText && this.IsEncrypted() == EncryptionType.Encrypted)
             {
                 this.hasPassedKey = true;
             }
@@ -312,13 +312,13 @@ namespace GroupCStegafy.Model
 
         private bool isTextOver()
         {
-            return this.endOfTextCharactersPassed == END_OF_TEXT && this.IsEncrypted() == EncryptionType.Encrypted ||
+            return this.endOfTextCharactersPassed == EndOfText && this.IsEncrypted() == EncryptionType.Encrypted ||
                    this.IsEncrypted() == EncryptionType.Unencrypted;
         }
 
         private void setKeyword(StringBuilder text)
         {
-            if (this.endOfTextCharactersPassed == END_OF_KEY)
+            if (this.endOfTextCharactersPassed == EndOfKey)
             {
                 this.KeyWord = text.ToString();
             }

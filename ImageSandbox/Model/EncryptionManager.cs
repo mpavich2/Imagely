@@ -13,7 +13,7 @@ namespace GroupCStegafy.Model
     {
         #region Data members
 
-        private const string KEY_END = "#KEY#";
+        private const string KeyEnd = "#KEY#";
 
         #endregion
 
@@ -43,7 +43,7 @@ namespace GroupCStegafy.Model
             encryptLetter(text, messageTextBytes, keywordTextBytes, encryptedText);
 
             var finalMessage = Encoding.ASCII.GetString(encryptedText);
-            return keyword + KEY_END + finalMessage;
+            return keyword + KeyEnd + finalMessage;
         }
 
         /// <summary>
