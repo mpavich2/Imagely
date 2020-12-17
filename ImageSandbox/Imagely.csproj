@@ -140,8 +140,8 @@
     <Compile Include="Model\HeaderManager.cs" />
     <Compile Include="Model\Picture.cs" />
     <Compile Include="Utils\FileUtilities.cs" />
-    <Compile Include="Utils\PictureConverter.cs" />
-    <Compile Include="Utils\PixelManager.cs" />
+    <Compile Include="Utils\PictureUtilities.cs" />
+    <Compile Include="Utils\PixelUtilities.cs" />
     <Compile Include="Utils\StringExtensions.cs" />
     <Compile Include="Viewmodel\MainPageViewModel.cs" />
     <Compile Include="Viewmodel\StegafyPageViewModel.cs" />

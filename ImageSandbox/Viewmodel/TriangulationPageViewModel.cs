@@ -77,36 +77,8 @@ namespace GroupCStegafy.Viewmodel
             {
                 return false;
             }
-
             var copyBitmapImage = await FileUtilities.MakeCopyOfTheImage(sourceImageFile);
-
-            using (var fileStream = await sourceImageFile.OpenAsync(FileAccessMode.Read))
-            {
-                var decoder = await BitmapDecoder.CreateAsync(fileStream);
-                var transform = new BitmapTransform {
-                    ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
-                    ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
-                };
-                this.SourcePicture.ModifiedImage =
-                    new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
-
-                this.SourcePicture.DpiX = decoder.DpiX;
-                this.SourcePicture.DpiY = decoder.DpiY;
-
-                var pixelData = await decoder.GetPixelDataAsync(
-                    BitmapPixelFormat.Bgra8,
-                    BitmapAlphaMode.Straight,
-                    transform,
-                    ExifOrientationMode.IgnoreExifOrientation,
-                    ColorManagementMode.DoNotColorManage
-                );
-
-                var sourcePixels = pixelData.DetachPixelData();
-                this.SourcePicture.Pixels = sourcePixels;
-                this.SourcePicture.Width = decoder.PixelWidth;
-                this.SourcePicture.Height = decoder.PixelHeight;
-            }
-
+            await PictureUtilities.LoadImageData(this.SourcePicture, sourceImageFile, copyBitmapImage);
             return true;
         }
 
@@ -264,6 +236,33 @@ namespace GroupCStegafy.Viewmodel
 
         private void drawTriangle(Canvas canvas, Triangle triangle)
         {
+            var polygon = this.createPolygonFromTriangle(triangle);
+
+            if (polygon.Points != null)
+            {
+                this.colorPolygon(polygon);
+                canvas.Children.Add(polygon);
+            }
+        }
+
+        private void colorPolygon(Polygon polygon)
+        {
+            var maxX = polygon.Points.Max(point => point.X);
+            var maxY = polygon.Points.Max(point => point.Y);
+            var minX = polygon.Points.Min(point => point.X);
+            var minY = polygon.Points.Min(point => point.Y);
+            var firstPoint = new Model.DelaunayTriangulation.Point(minX, minY);
+            var secondPoint = new Model.DelaunayTriangulation.Point(maxX, maxY);
+            var averageColor = PixelUtilities.GetAverageColor(this.SourcePicture, firstPoint, secondPoint);
+
+            Brush brush = new SolidColorBrush(averageColor);
+            polygon.Fill = brush;
+            polygon.Stroke = brush;
+            polygon.StrokeThickness = 1.0;
+        }
+
+        private Polygon createPolygonFromTriangle(Triangle triangle)
+        {
             var polygon = new Polygon();
             var point1 = new Point(triangle.Vertices[0].X, triangle.Vertices[0].Y);
             var point2 = new Point(triangle.Vertices[1].X, triangle.Vertices[1].Y);
@@ -275,22 +274,7 @@ namespace GroupCStegafy.Viewmodel
                 polygon.Points.Add(point3);
             }
 
-            if (polygon.Points != null)
-            {
-                var maxX = polygon.Points.Max(point => point.X);
-                var maxY = polygon.Points.Max(point => point.Y);
-                var minX = polygon.Points.Min(point => point.X);
-                var minY = polygon.Points.Min(point => point.Y);
-                var firstPoint = new Model.DelaunayTriangulation.Point(minX, minY);
-                var secondPoint = new Model.DelaunayTriangulation.Point(maxX, maxY);
-                var averageColor = PixelManager.GetAverageColor(this.SourcePicture, firstPoint, secondPoint);
-
-                Brush brush = new SolidColorBrush(averageColor);
-                polygon.Fill = brush;
-                polygon.Stroke = brush;
-                polygon.StrokeThickness = 1.0;
-                canvas.Children.Add(polygon);
-            }
+            return polygon;
         }
 
         private void copySourcePicture()
@@ -306,36 +290,12 @@ namespace GroupCStegafy.Viewmodel
             if (dragEvent.DataView.Contains(StandardDataFormats.StorageItems))
             {
                 var items = await dragEvent.DataView.GetStorageItemsAsync();
-                var storageFile = items[0] as StorageFile;
-                var copyBitmapImage = await FileUtilities.MakeCopyOfTheImage(storageFile);
+                var sourceImageFile = items[0] as StorageFile;
+                var copyBitmapImage = await FileUtilities.MakeCopyOfTheImage(sourceImageFile);
 
-                if (storageFile != null)
+                if (sourceImageFile != null)
                 {
-                    using (var fileStream = await storageFile.OpenAsync(FileAccessMode.Read))
-                    {
-                        var decoder = await BitmapDecoder.CreateAsync(fileStream);
-                        var transform = new BitmapTransform {
-                            ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
-                            ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
-                        };
-                        this.SourcePicture.ModifiedImage =
-                            new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
-                        this.SourcePicture.DpiX = decoder.DpiX;
-                        this.SourcePicture.DpiY = decoder.DpiY;
-
-                        var pixelData = await decoder.GetPixelDataAsync(
-                            BitmapPixelFormat.Bgra8,
-                            BitmapAlphaMode.Straight,
-                            transform,
-                            ExifOrientationMode.IgnoreExifOrientation,
-                            ColorManagementMode.DoNotColorManage
-                        );
-
-                        var sourcePixels = pixelData.DetachPixelData();
-                        this.SourcePicture.Pixels = sourcePixels;
-                        this.SourcePicture.Width = decoder.PixelWidth;
-                        this.SourcePicture.Height = decoder.PixelHeight;
-                    }
+                    await PictureUtilities.LoadImageData(this.SourcePicture, sourceImageFile, copyBitmapImage);
                 }
             }
         }

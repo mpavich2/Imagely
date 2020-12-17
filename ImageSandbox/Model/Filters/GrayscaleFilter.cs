@@ -42,7 +42,7 @@ namespace GroupCStegafy.Model.Filters
             {
                 for (var j = 0; j < this.sourcePicture.Height - 1; j++)
                 {
-                    var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, j, i,
+                    var sourcePixelColor = PixelUtilities.GetPixelBgra8(this.sourcePicture.Pixels, j, i,
                         this.sourcePicture.Width,
                         this.sourcePicture.Height);
                     var averageColor = (sourcePixelColor.R + sourcePixelColor.G + sourcePixelColor.B) /
@@ -50,7 +50,7 @@ namespace GroupCStegafy.Model.Filters
                     var averageColorByte = Convert.ToByte(averageColor);
                     var newPixelColor = Color.FromArgb(this.maxRgbValue, averageColorByte, averageColorByte,
                         averageColorByte);
-                    PixelManager.SetPixelBgra8(this.sourcePicture.Pixels, j, i, newPixelColor, this.sourcePicture.Width,
+                    PixelUtilities.SetPixelBgra8(this.sourcePicture.Pixels, j, i, newPixelColor, this.sourcePicture.Width,
                         this.sourcePicture.Height);
                 }
             }

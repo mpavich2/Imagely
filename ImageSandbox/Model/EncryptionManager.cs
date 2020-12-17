@@ -60,13 +60,13 @@ namespace GroupCStegafy.Model
                 {
                     j = HeaderManager.SkipHeaderLocation(i, j);
                     var sourcePixelColor =
-                        PixelManager.GetPixelBgra8(pixels, i, j, sourcePicture.Width, sourcePicture.Height);
+                        PixelUtilities.GetPixelBgra8(pixels, i, j, sourcePicture.Width, sourcePicture.Height);
                     var hiddenPixelColor = Colors.White;
 
                     hiddenPixelColor =
                         getOppositeVerticalHalfPixelColor(i, j, hiddenPixelColor, sourcePicture, hiddenPicture);
 
-                    if (PixelManager.IsColorBlack(hiddenPixelColor))
+                    if (PixelUtilities.IsColorBlack(hiddenPixelColor))
                     {
                         embedBlackPixel(pixels, sourcePixelColor, i, j, sourcePicture);
                     }
@@ -103,13 +103,13 @@ namespace GroupCStegafy.Model
         private static void embedWhitePixel(byte[] pixels, Color sourcePixelColor, int i, int j, Picture sourcePicture)
         {
             sourcePixelColor.B |= 1;
-            PixelManager.SetPixelBgra8(pixels, i, j, sourcePixelColor, sourcePicture.Width, sourcePicture.Height);
+            PixelUtilities.SetPixelBgra8(pixels, i, j, sourcePixelColor, sourcePicture.Width, sourcePicture.Height);
         }
 
         private static void embedBlackPixel(byte[] pixels, Color sourcePixelColor, int i, int j, Picture sourcePicture)
         {
             sourcePixelColor.B = (byte) (sourcePixelColor.B & ~1);
-            PixelManager.SetPixelBgra8(pixels, i, j, sourcePixelColor,
+            PixelUtilities.SetPixelBgra8(pixels, i, j, sourcePixelColor,
                 sourcePicture.Width, sourcePicture.Height);
         }
 
@@ -121,7 +121,7 @@ namespace GroupCStegafy.Model
                 var swappedYValue = (int) (i + sourcePicture.VerticalCenter);
                 if (swappedYValue < hiddenPicture.Height && j < hiddenPicture.Width)
                 {
-                    hiddenPixelColor = PixelManager.GetPixelBgra8(hiddenPicture.Pixels, swappedYValue, j,
+                    hiddenPixelColor = PixelUtilities.GetPixelBgra8(hiddenPicture.Pixels, swappedYValue, j,
                         hiddenPicture.Width, hiddenPicture.Height);
                 }
             }
@@ -131,7 +131,7 @@ namespace GroupCStegafy.Model
                 var swappedYValue = (int) (i - sourcePicture.VerticalCenter);
                 if (swappedYValue < hiddenPicture.Height && j < hiddenPicture.Width)
                 {
-                    hiddenPixelColor = PixelManager.GetPixelBgra8(hiddenPicture.Pixels, swappedYValue, j,
+                    hiddenPixelColor = PixelUtilities.GetPixelBgra8(hiddenPicture.Pixels, swappedYValue, j,
                         hiddenPicture.Width, hiddenPicture.Height);
                 }
             }

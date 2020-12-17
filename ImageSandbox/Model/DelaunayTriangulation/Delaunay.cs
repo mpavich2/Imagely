@@ -109,9 +109,9 @@ namespace GroupCStegafy.Model.DelaunayTriangulation
 
         private void addWhitePoint(Picture sourcePicture, int i, int j, List<Point> points)
         {
-            var pixelColor = PixelManager.GetPixelBgra8(sourcePicture.Pixels, i, j, sourcePicture.Width,
+            var pixelColor = PixelUtilities.GetPixelBgra8(sourcePicture.Pixels, i, j, sourcePicture.Width,
                 sourcePicture.Height);
-            if (PixelManager.IsColorWhite(pixelColor))
+            if (PixelUtilities.IsColorWhite(pixelColor))
             {
                 points.Add(new Point(j, i));
             }

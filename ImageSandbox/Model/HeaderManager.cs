@@ -83,7 +83,7 @@ namespace GroupCStegafy.Model
             var imageWithHeader = this.sourcePicture.Pixels;
             for (var i = 0; i <= ImageConstants.SecondX; i++)
             {
-                var pixelColor = PixelManager.GetPixelBgra8(imageWithHeader, ImageConstants.FirstX, i,
+                var pixelColor = PixelUtilities.GetPixelBgra8(imageWithHeader, ImageConstants.FirstX, i,
                     this.sourcePicture.Width,
                     this.sourcePicture.Height);
                 if (i == ImageConstants.FirstX)
@@ -131,7 +131,7 @@ namespace GroupCStegafy.Model
         /// </returns>
         public static EncryptionType CheckForEncryption(Color pixelColor)
         {
-            if (PixelManager.GetLeastSignificantBit(pixelColor.R) != ImageConstants.MinRgbValue)
+            if (PixelUtilities.GetLeastSignificantBit(pixelColor.R) != ImageConstants.MinRgbValue)
             {
                 return EncryptionType.Encrypted;
             }
@@ -174,7 +174,7 @@ namespace GroupCStegafy.Model
         /// </returns>
         public static bool CheckFileType(Color pixelColor)
         {
-            return PixelManager.GetLeastSignificantBit(pixelColor.B) != ImageConstants.MinRgbValue;
+            return PixelUtilities.GetLeastSignificantBit(pixelColor.B) != ImageConstants.MinRgbValue;
         }
 
         private void setFirstPixel(Color pixelColor, byte[] imageWithHeader)
@@ -183,7 +183,7 @@ namespace GroupCStegafy.Model
             pixelColor.R = (byte) ImageConstants.HiddenMessageValue;
             pixelColor.G = (byte) ImageConstants.HiddenMessageValue;
             pixelColor.B = (byte) ImageConstants.HiddenMessageValue;
-            PixelManager.SetPixelBgra8(imageWithHeader, ImageConstants.FirstX, ImageConstants.FirstX,
+            PixelUtilities.SetPixelBgra8(imageWithHeader, ImageConstants.FirstX, ImageConstants.FirstX,
                 pixelColor, this.sourcePicture.Width,
                 this.sourcePicture.Height);
         }
@@ -209,7 +209,7 @@ namespace GroupCStegafy.Model
             }
 
             pixelColor.G = (byte) this.Bpcc;
-            PixelManager.SetPixelBgra8(imageWithHeader, ImageConstants.FirstX, ImageConstants.SecondX,
+            PixelUtilities.SetPixelBgra8(imageWithHeader, ImageConstants.FirstX, ImageConstants.SecondX,
                 pixelColor, this.sourcePicture.Width,
                 this.sourcePicture.Height);
         }

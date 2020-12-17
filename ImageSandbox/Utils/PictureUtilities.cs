@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
+using Windows.Graphics.Imaging;
+using Windows.Storage;
+using Windows.UI.Xaml.Media.Imaging;
 using GroupCStegafy.Model;
 
 namespace GroupCStegafy.Utils
@@ -10,7 +14,7 @@ namespace GroupCStegafy.Utils
     /// <summary>
     ///     Defines the PictureConverter class.
     /// </summary>
-    public static class PictureConverter
+    public static class PictureUtilities
     {
         #region Methods
 
@@ -45,7 +49,7 @@ namespace GroupCStegafy.Utils
                 {
                     j = HeaderManager.SkipHeaderLocation(i, j);
 
-                    var sourcePixelColor = PixelManager.GetPixelBgra8(picture.Pixels, i, j,
+                    var sourcePixelColor = PixelUtilities.GetPixelBgra8(picture.Pixels, i, j,
                         picture.Width, picture.Height);
 
                     var bytes = new List<byte> {
@@ -63,6 +67,43 @@ namespace GroupCStegafy.Utils
             }
 
             return array;
+        }
+
+        /// <summary>
+        /// Loads the image data.
+        /// </summary>
+        /// <param name="picture">The source picture.</param>
+        /// <param name="sourceImageFile">The source image file.</param>
+        /// <param name="copyBitmapImage">The copy bitmap image.</param>
+        public static async Task LoadImageData(Picture picture, StorageFile sourceImageFile, BitmapImage copyBitmapImage)
+        {
+            using (var fileStream = await sourceImageFile.OpenAsync(FileAccessMode.Read))
+            {
+                var decoder = await BitmapDecoder.CreateAsync(fileStream);
+                var transform = new BitmapTransform
+                {
+                    ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
+                    ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
+                };
+                picture.ModifiedImage =
+                    new WriteableBitmap((int)decoder.PixelWidth, (int)decoder.PixelHeight);
+
+                picture.DpiX = decoder.DpiX;
+                picture.DpiY = decoder.DpiY;
+
+                var pixelData = await decoder.GetPixelDataAsync(
+                    BitmapPixelFormat.Bgra8,
+                    BitmapAlphaMode.Straight,
+                    transform,
+                    ExifOrientationMode.IgnoreExifOrientation,
+                    ColorManagementMode.DoNotColorManage
+                );
+
+                var sourcePixels = pixelData.DetachPixelData();
+                picture.Pixels = sourcePixels;
+                picture.Width = decoder.PixelWidth;
+                picture.Height = decoder.PixelHeight;
+            }
         }
 
         private static IEnumerable<bool> getBits(byte b)

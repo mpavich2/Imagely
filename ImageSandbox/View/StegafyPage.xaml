@@ -79,7 +79,6 @@
                 <NavigationViewItem Icon="Pictures" Content="Image Triangulation Art" Tapped="ImageTriangulationArt_Tapped" />
                 <NavigationViewItem Icon="Pictures" Content="Steganography" Tapped="Steganography_Tapped" />
                 <NavigationViewItem Icon="Pictures" Content="Abstract Triangulation Art" Tapped="AbstractTriangulationArt_Tapped" />
-                <NavigationViewItem Icon="Pictures" Content="Paint by Number Generator" Tapped="PaintByNumberGenerator_Tapped" />
             </NavigationView.MenuItems>
         </NavigationView>
     </Grid>

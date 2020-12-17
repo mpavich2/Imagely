@@ -10,7 +10,7 @@ namespace GroupCStegafy.Utils
     /// <summary>
     ///     Defines the PixelManager class.
     /// </summary>
-    public static class PixelManager
+    public static class PixelUtilities
     {
         #region Methods
 

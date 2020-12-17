@@ -90,7 +90,7 @@ namespace GroupCStegafy.Model
 
         private void checkForEncryption()
         {
-            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, 0, 1, this.sourcePicture.Width,
+            var sourcePixelColor = PixelUtilities.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX, ImageConstants.SecondX, this.sourcePicture.Width,
                 this.sourcePicture.Height);
             if (HeaderManager.CheckForEncryption(sourcePixelColor) == EncryptionType.Encrypted)
             {
@@ -104,7 +104,7 @@ namespace GroupCStegafy.Model
 
         private void checkBpccValue()
         {
-            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, 0, 1, this.sourcePicture.Width,
+            var sourcePixelColor = PixelUtilities.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX, ImageConstants.SecondX, this.sourcePicture.Width,
                 this.sourcePicture.Height);
             this.bpcc = HeaderManager.CheckBpccValue(sourcePixelColor);
         }
@@ -116,19 +116,19 @@ namespace GroupCStegafy.Model
                 for (var j = 0; j < this.hiddenPicture.Width; j++)
                 {
                     j = HeaderManager.SkipHeaderLocation(i, j);
-                    var sourcePixelColor = PixelManager.GetPixelBgra8(pixels, i, j, this.sourcePicture.Width,
-                        this.sourcePicture.Height);
-                    var hiddenPixelColor = PixelManager.GetPixelBgra8(this.hiddenPicture.Pixels, i, j,
-                        this.hiddenPicture.Width, this.hiddenPicture.Height);
 
-                    this.embedPixel(pixels, hiddenPixelColor, sourcePixelColor, i, j);
+                    this.embedPixel(pixels, i, j);
                 }
             }
         }
 
-        private void embedPixel(byte[] pixels, Color hiddenPixelColor, Color sourcePixelColor, int i, int j)
+        private void embedPixel(byte[] pixels, int i, int j)
         {
-            if (PixelManager.IsColorBlack(hiddenPixelColor))
+            var sourcePixelColor = PixelUtilities.GetPixelBgra8(pixels, i, j, this.sourcePicture.Width,
+                this.sourcePicture.Height);
+            var hiddenPixelColor = PixelUtilities.GetPixelBgra8(this.hiddenPicture.Pixels, i, j,
+                this.hiddenPicture.Width, this.hiddenPicture.Height);
+            if (PixelUtilities.IsColorBlack(hiddenPixelColor))
             {
                 this.embedBlackPixel(pixels, sourcePixelColor, i, j);
             }
@@ -151,35 +151,41 @@ namespace GroupCStegafy.Model
                 for (var j = 0; j < this.sourcePicture.Width; j++)
                 {
                     j = HeaderManager.SkipHeaderLocation(i, j);
-                    var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, i, j,
-                        this.sourcePicture.Width, this.sourcePicture.Height);
-
-                    sourcePixelColor.R = bytes[index];
-                    index++;
-
-                    sourcePixelColor.G = bytes[index];
-                    index++;
-
-                    sourcePixelColor.B = bytes[index];
-                    index++;
-
-                    PixelManager.SetPixelBgra8(this.sourcePicture.Pixels, i, j, sourcePixelColor,
-                        this.sourcePicture.Width, this.sourcePicture.Height);
+                    index = this.updatePixel(bytes, i, j, index);
                 }
             }
+        }
+
+        private int updatePixel(IReadOnlyList<byte> bytes, int i, int j, int index)
+        {
+            var sourcePixelColor = PixelUtilities.GetPixelBgra8(this.sourcePicture.Pixels, i, j,
+                this.sourcePicture.Width, this.sourcePicture.Height);
+
+            sourcePixelColor.R = bytes[index];
+            index++;
+
+            sourcePixelColor.G = bytes[index];
+            index++;
+
+            sourcePixelColor.B = bytes[index];
+            index++;
+
+            PixelUtilities.SetPixelBgra8(this.sourcePicture.Pixels, i, j, sourcePixelColor,
+                this.sourcePicture.Width, this.sourcePicture.Height);
+            return index;
         }
 
         private void embedWhitePixel(byte[] pixels, Color sourcePixelColor, int i, int j)
         {
             sourcePixelColor.B |= 1;
-            PixelManager.SetPixelBgra8(pixels, i, j, sourcePixelColor, this.sourcePicture.Width,
+            PixelUtilities.SetPixelBgra8(pixels, i, j, sourcePixelColor, this.sourcePicture.Width,
                 this.sourcePicture.Height);
         }
 
         private void embedBlackPixel(byte[] pixels, Color sourcePixelColor, int i, int j)
         {
             sourcePixelColor.B = (byte)(sourcePixelColor.B & ~1);
-            PixelManager.SetPixelBgra8(pixels, i, j, sourcePixelColor,
+            PixelUtilities.SetPixelBgra8(pixels, i, j, sourcePixelColor,
                 this.sourcePicture.Width, this.sourcePicture.Height);
         }
 
@@ -189,7 +195,7 @@ namespace GroupCStegafy.Model
             text += this.endOfText;
             var textArray = text.StringToBitArray();
             var textArrayIndex = 0;
-            var pixels = PictureConverter.ConvertBytesIntoBitArray(this.sourcePicture);
+            var pixels = PictureUtilities.ConvertBytesIntoBitArray(this.sourcePicture);
 
             this.MessageTooLarge = false;
             for (var i = 0; i < pixels.Length; i++)
@@ -217,7 +223,7 @@ namespace GroupCStegafy.Model
             {
                 var currentIndex = i;
                 currentIndex -= this.bpcc;
-                if (this.bpcc == 8)
+                if (this.bpcc == this.byteLength)
                 {
                     if (this.changeAllBitsPerColorChannel(pixels, textArray, ref index, currentIndex))
                     {
@@ -257,18 +263,18 @@ namespace GroupCStegafy.Model
         {
             if (index >= textArray.Count)
             {
-                var ret = new byte[pixels.Length / 8];
-                for (var i = 0; i < pixels.Length; i += 8)
+                var ret = new byte[pixels.Length / this.byteLength];
+                for (var i = 0; i < pixels.Length; i += this.byteLength)
                 {
                     var value = 0;
-                    for (var j = 0; j < 8; j++)
+                    for (var j = 0; j < this.byteLength; j++)
                     {
                         if (pixels[i + j])
                         {
-                            value += 1 << (7 - j);
+                            value += 1 << ((this.byteLength - 1) - j);
                         }
                     }
-                    ret[i / 8] = (byte)value;
+                    ret[i / this.byteLength] = (byte)value;
                 }
                 this.updateSourceImage(ret);
                 return true;

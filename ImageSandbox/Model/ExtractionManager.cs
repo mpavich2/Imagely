@@ -65,7 +65,7 @@ namespace GroupCStegafy.Model
                 for (var j = 0; j < this.sourcePicture.Width; j++)
                 {
                     j = HeaderManager.SkipHeaderLocation(i, j);
-                    var hiddenPixelColor = PixelManager.GetPixelBgra8(pixels, i, j,
+                    var hiddenPixelColor = PixelUtilities.GetPixelBgra8(pixels, i, j,
                         this.sourcePicture.Width,
                         this.sourcePicture.Height);
                     this.setPixelToMonochromeColor(pixels, hiddenPixelColor, i, j);
@@ -97,7 +97,7 @@ namespace GroupCStegafy.Model
         /// </returns>
         public bool ContainsHiddenMessage()
         {
-            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX,
+            var sourcePixelColor = PixelUtilities.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX,
                 ImageConstants.FirstX,
                 this.sourcePicture.Width,
                 this.sourcePicture.Height);
@@ -112,7 +112,7 @@ namespace GroupCStegafy.Model
         /// </returns>
         public EncryptionType IsEncrypted()
         {
-            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX,
+            var sourcePixelColor = PixelUtilities.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX,
                 ImageConstants.SecondX,
                 this.sourcePicture.Width,
                 this.sourcePicture.Height);
@@ -127,7 +127,7 @@ namespace GroupCStegafy.Model
         /// </returns>
         public bool IsText()
         {
-            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX,
+            var sourcePixelColor = PixelUtilities.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX,
                 ImageConstants.SecondX,
                 this.sourcePicture.Width,
                 this.sourcePicture.Height);
@@ -136,7 +136,7 @@ namespace GroupCStegafy.Model
 
         private void setPixelToMonochromeColor(byte[] pixels, Color hiddenPixelColor, int i, int j)
         {
-            if (PixelManager.GetLeastSignificantBit(hiddenPixelColor.B) == ImageConstants.MinRgbValue)
+            if (PixelUtilities.GetLeastSignificantBit(hiddenPixelColor.B) == ImageConstants.MinRgbValue)
             {
                 this.setPixelBlack(pixels, i, j);
             }
@@ -150,7 +150,7 @@ namespace GroupCStegafy.Model
         {
             var sourcePixelColor =
                 Color.FromArgb(this.maxRgbValue, this.maxRgbValue, this.maxRgbValue, this.maxRgbValue);
-            PixelManager.SetPixelBgra8(pixels, i, j, sourcePixelColor,
+            PixelUtilities.SetPixelBgra8(pixels, i, j, sourcePixelColor,
                 this.sourcePicture.Width,
                 this.sourcePicture.Height);
         }
@@ -159,7 +159,7 @@ namespace GroupCStegafy.Model
         {
             var sourcePixelColor =
                 Color.FromArgb(this.maxRgbValue, this.minRgbValue, this.minRgbValue, this.minRgbValue);
-            PixelManager.SetPixelBgra8(pixels, i, j, sourcePixelColor,
+            PixelUtilities.SetPixelBgra8(pixels, i, j, sourcePixelColor,
                 this.sourcePicture.Width,
                 this.sourcePicture.Height);
         }
@@ -168,7 +168,7 @@ namespace GroupCStegafy.Model
         {
             var text = new StringBuilder();
             var binaryText = new StringBuilder();
-            var pixels = PictureConverter.ConvertBytesIntoBitArray(this.sourcePicture);
+            var pixels = PictureUtilities.ConvertBytesIntoBitArray(this.sourcePicture);
 
             for (var i = 0; i < pixels.Length; i++)
             {
@@ -326,7 +326,7 @@ namespace GroupCStegafy.Model
 
         private void checkBpccValue()
         {
-            var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX,
+            var sourcePixelColor = PixelUtilities.GetPixelBgra8(this.sourcePicture.Pixels, ImageConstants.FirstX,
                 ImageConstants.SecondX,
                 this.sourcePicture.Width,
                 this.sourcePicture.Height);

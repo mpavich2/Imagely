@@ -23,13 +23,13 @@ namespace GroupCStegafy.Model
                 {
                     var currentIndex = i;
                     var oppositeYValue = (int) (currentIndex + extractedImage.VerticalCenter);
-                    var oppositePixelColor = PixelManager.GetPixelBgra8(extractedImage.Pixels, oppositeYValue, j,
+                    var oppositePixelColor = PixelUtilities.GetPixelBgra8(extractedImage.Pixels, oppositeYValue, j,
                         extractedImage.Width, extractedImage.Height);
-                    var pixelColor = PixelManager.GetPixelBgra8(extractedImage.Pixels, i, j, extractedImage.Width,
+                    var pixelColor = PixelUtilities.GetPixelBgra8(extractedImage.Pixels, i, j, extractedImage.Width,
                         extractedImage.Height);
-                    PixelManager.SetPixelBgra8(extractedImage.Pixels, i, j, oppositePixelColor, extractedImage.Width,
+                    PixelUtilities.SetPixelBgra8(extractedImage.Pixels, i, j, oppositePixelColor, extractedImage.Width,
                         extractedImage.Height);
-                    PixelManager.SetPixelBgra8(extractedImage.Pixels, oppositeYValue, j, pixelColor,
+                    PixelUtilities.SetPixelBgra8(extractedImage.Pixels, oppositeYValue, j, pixelColor,
                         extractedImage.Width, extractedImage.Height);
                 }
             }

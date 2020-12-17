@@ -68,12 +68,7 @@ namespace GroupCStegafy.View
                     return false;
                 }
 
-                using (var writeStream = this.SourcePicture.ModifiedImage.PixelBuffer.AsStream())
-                {
-                    await writeStream.WriteAsync(this.SourcePicture.Pixels, 0, this.SourcePicture.Pixels.Length);
-                    this.sourceImage.Source = this.SourcePicture.ModifiedImage;
-                }
-
+                await this.writePictureToImage(this.SourcePicture, this.sourceImage);
                 this.recentImage.Source = this.SourcePicture.ModifiedImage;
                 this.updateRecentImageTextColor(this.sourceImageTextBlock);
                 return true;
@@ -81,6 +76,20 @@ namespace GroupCStegafy.View
             catch
             {
                 return false;
+            }
+        }
+
+        private async Task writePictureToImage(Picture picture, Image image)
+        {
+            if (picture == null)
+            {
+                return;
+            }
+            using (var writeStream = picture.ModifiedImage.PixelBuffer.AsStream())
+            {
+                await writeStream.WriteAsync(picture.Pixels, 0,
+                    picture.Pixels.Length);
+                image.Source = picture.ModifiedImage;
             }
         }
 
@@ -109,11 +118,7 @@ namespace GroupCStegafy.View
         {
             this.viewModel.applyGrayscaleFilter();
             this.viewModel.applySobelFilter();
-            using (var writeStream = this.ModifiedPicture.ModifiedImage.PixelBuffer.AsStream())
-            {
-                await writeStream.WriteAsync(this.ModifiedPicture.Pixels, 0, this.ModifiedPicture.Pixels.Length);
-                this.sobelImage.Source = this.ModifiedPicture.ModifiedImage;
-            }
+            await this.writePictureToImage(this.ModifiedPicture, this.sobelImage);
         }
 
         private async Task convertCanvasToImage()
@@ -127,7 +132,7 @@ namespace GroupCStegafy.View
 
         private void drawAbstractTriangleArt()
         {
-            //eventually move into own class to create random abstract triangle art
+            //TODO: eventually move into own class to create random abstract triangle art
             this.viewModel.DrawAbstractTriangleArt(this.triangulationCanvas, this.pointsTextBox.Text);
         }
 
@@ -158,12 +163,7 @@ namespace GroupCStegafy.View
                 return false;
             }
 
-            using (var writeStream = this.SourcePicture.ModifiedImage.PixelBuffer.AsStream())
-            {
-                await writeStream.WriteAsync(this.SourcePicture.Pixels, 0, this.SourcePicture.Pixels.Length);
-                this.sourceImage.Source = this.SourcePicture.ModifiedImage;
-            }
-
+            await this.writePictureToImage(this.SourcePicture, this.sourceImage);
             this.recentImage.Source = this.SourcePicture.ModifiedImage;
             return true;
         }
@@ -262,11 +262,6 @@ namespace GroupCStegafy.View
         private void AbstractTriangulationArt_Tapped(object sender, TappedRoutedEventArgs e)
         {
             //TODO add abstract triangulation art page
-        }
-
-        private void PaintByNumberGenerator_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            //TODO add paint by number generator page
         }
 
         private void showReadyTextAndPointsBox()

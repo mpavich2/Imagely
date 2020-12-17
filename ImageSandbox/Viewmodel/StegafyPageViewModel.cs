@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
@@ -167,36 +168,8 @@ namespace GroupCStegafy.Viewmodel
             {
                 return false;
             }
-
             var copyBitmapImage = await FileUtilities.MakeCopyOfTheImage(sourceImageFile);
-
-            using (var fileStream = await sourceImageFile.OpenAsync(FileAccessMode.Read))
-            {
-                var decoder = await BitmapDecoder.CreateAsync(fileStream);
-                var transform = new BitmapTransform {
-                    ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
-                    ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
-                };
-                this.SourcePicture.ModifiedImage =
-                    new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
-
-                this.SourcePicture.DpiX = decoder.DpiX;
-                this.SourcePicture.DpiY = decoder.DpiY;
-
-                var pixelData = await decoder.GetPixelDataAsync(
-                    BitmapPixelFormat.Bgra8,
-                    BitmapAlphaMode.Straight,
-                    transform,
-                    ExifOrientationMode.IgnoreExifOrientation,
-                    ColorManagementMode.DoNotColorManage
-                );
-
-                var sourcePixels = pixelData.DetachPixelData();
-                this.SourcePicture.Pixels = sourcePixels;
-                this.SourcePicture.Width = decoder.PixelWidth;
-                this.SourcePicture.Height = decoder.PixelHeight;
-            }
-
+            await PictureUtilities.LoadImageData(this.SourcePicture, sourceImageFile, copyBitmapImage);
             return true;
         }
 
@@ -401,80 +374,26 @@ namespace GroupCStegafy.Viewmodel
             if (dragEvent.DataView.Contains(StandardDataFormats.StorageItems))
             {
                 var items = await dragEvent.DataView.GetStorageItemsAsync();
-                var storageFile = items[0] as StorageFile;
-                var copyBitmapImage = await FileUtilities.MakeCopyOfTheImage(storageFile);
+                var sourceImageFile = items[0] as StorageFile;
+                var copyBitmapImage = await FileUtilities.MakeCopyOfTheImage(sourceImageFile);
 
-                if (storageFile != null)
+                if (sourceImageFile != null)
                 {
-                    using (var fileStream = await storageFile.OpenAsync(FileAccessMode.Read))
-                    {
-                        var decoder = await BitmapDecoder.CreateAsync(fileStream);
-                        var transform = new BitmapTransform {
-                            ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
-                            ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
-                        };
-                        if (this.HiddenPicture.ModifiedImage == null && this.SourcePicture.ModifiedImage != null &&
-                            await this.isHiddenImageTooLarge(decoder))
-                        {
-                            return false;
-                        }
-
-                        picture.ModifiedImage =
-                            new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
-                        picture.DpiX = decoder.DpiX;
-                        picture.DpiY = decoder.DpiY;
-
-                        var pixelData = await decoder.GetPixelDataAsync(
-                            BitmapPixelFormat.Bgra8,
-                            BitmapAlphaMode.Straight,
-                            transform,
-                            ExifOrientationMode.IgnoreExifOrientation,
-                            ColorManagementMode.DoNotColorManage
-                        );
-
-                        var sourcePixels = pixelData.DetachPixelData();
-                        picture.Pixels = sourcePixels;
-                        picture.Width = decoder.PixelWidth;
-                        picture.Height = decoder.PixelHeight;
-                    }
+                    await PictureUtilities.LoadImageData(this.SourcePicture, sourceImageFile, copyBitmapImage);
                 }
             }
 
             return true;
         }
 
-        private async Task<bool> openHiddenImage(StorageFile hiddenFile)
+        private async Task<bool> openHiddenImage(StorageFile hiddenImageFile)
         {
-            var copyBitmapImage = await FileUtilities.MakeCopyOfTheImage(hiddenFile);
-
-            using (var fileStream = await hiddenFile.OpenAsync(FileAccessMode.Read))
+            if (await this.isHiddenImageTooLarge(hiddenImageFile))
             {
-                var decoder = await BitmapDecoder.CreateAsync(fileStream);
-                var transform = new BitmapTransform {
-                    ScaledWidth = Convert.ToUInt32(copyBitmapImage.PixelWidth),
-                    ScaledHeight = Convert.ToUInt32(copyBitmapImage.PixelHeight)
-                };
-                if (await this.isHiddenImageTooLarge(decoder))
-                {
-                    return false;
-                }
-
-                this.HiddenPicture.ModifiedImage =
-                    new WriteableBitmap((int) decoder.PixelWidth, (int) decoder.PixelHeight);
-
-                var pixelData = await decoder.GetPixelDataAsync(
-                    BitmapPixelFormat.Bgra8,
-                    BitmapAlphaMode.Straight,
-                    transform,
-                    ExifOrientationMode.IgnoreExifOrientation,
-                    ColorManagementMode.DoNotColorManage
-                );
-
-                var hiddenPixels = pixelData.DetachPixelData();
-                this.HiddenPicture.Pixels = hiddenPixels;
-                this.HiddenPicture.Height = decoder.PixelHeight;
-                this.HiddenPicture.Width = decoder.PixelWidth;
+                return false;
             }
+            var copyBitmapImage = await FileUtilities.MakeCopyOfTheImage(hiddenImageFile);
+            await PictureUtilities.LoadImageData(this.HiddenPicture, hiddenImageFile, copyBitmapImage);
 
             return true;
         }
@@ -493,7 +412,7 @@ namespace GroupCStegafy.Viewmodel
         private async Task<bool> isTextFileTooBig()
         {
             var textArray = this.HiddenText.StringToBitArray();
-            var pixels = PictureConverter.ConvertBytesIntoBitArray(this.SourcePicture);
+            var pixels = PictureUtilities.ConvertBytesIntoBitArray(this.SourcePicture);
             if (textArray.Length > pixels.Length / ImageConstants.ByteLength * this.BitsPerColorChannel)
             {
                 await this.showMessageCantFitDialog(textArray, pixels);
@@ -503,13 +422,17 @@ namespace GroupCStegafy.Viewmodel
             return false;
         }
 
-        private async Task<bool> isHiddenImageTooLarge(BitmapDecoder decoder)
+        private async Task<bool> isHiddenImageTooLarge(IStorageFile hiddenFile)
         {
-            if (decoder.PixelWidth > this.SourcePicture.Width ||
-                decoder.PixelHeight > this.SourcePicture.Height)
+            using (var fileStream = await hiddenFile.OpenAsync(FileAccessMode.Read))
             {
-                await this.showInvalidHiddenImageDialog();
-                return true;
+                var decoder = await BitmapDecoder.CreateAsync(fileStream);
+                if (decoder.PixelWidth > this.SourcePicture.Width ||
+                    decoder.PixelHeight > this.SourcePicture.Height)
+                {
+                    await this.showInvalidHiddenImageDialog();
+                    return true;
+                }
             }
 
             return false;
@@ -527,7 +450,7 @@ namespace GroupCStegafy.Viewmodel
             return false;
         }
 
-        private FileType checkFileType(StorageFile storageFile)
+        private FileType checkFileType(IStorageFile storageFile)
         {
             if (storageFile == null)
             {
@@ -566,13 +489,13 @@ namespace GroupCStegafy.Viewmodel
             otherPicture.Width = picture.Width;
         }
 
-        private int numNecessaryBits(char[] text, bool[] pixels)
+        private int numNecessaryBits(IReadOnlyCollection<char> text, IReadOnlyCollection<bool> pixels)
         {
             var currentBpcc = this.BitsPerColorChannel;
 
             for (var i = currentBpcc; i <= ImageConstants.ByteLength; i++)
             {
-                if (text.Length < pixels.Length / ImageConstants.ByteLength * i)
+                if (text.Count < pixels.Count / ImageConstants.ByteLength * i)
                 {
                     return i;
                 }
@@ -581,7 +504,7 @@ namespace GroupCStegafy.Viewmodel
             return 9;
         }
 
-        private string adjustMessageCantFitText(char[] text, bool[] pixels)
+        private string adjustMessageCantFitText(IReadOnlyCollection<char> text, IReadOnlyCollection<bool> pixels)
         {
             return "Hidden image was too large for selected bits per color channel amount. Please select the " +
                    this.numNecessaryBits(text, pixels) + " bits per color channel option.";
@@ -605,7 +528,7 @@ namespace GroupCStegafy.Viewmodel
             await dialog.ShowAsync();
         }
 
-        private async Task showMessageCantFitDialog(char[] text, bool[] pixels)
+        private async Task showMessageCantFitDialog(IReadOnlyCollection<char> text, IReadOnlyCollection<bool> pixels)
         {
             var dialog = new InvalidMessageLengthDialog();
             if (this.numNecessaryBits(text, pixels) == ImageConstants.ByteLength + 1)

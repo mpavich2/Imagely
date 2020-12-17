@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Runtime.InteropServices.WindowsRuntime;
+﻿using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.UI.Xaml;
@@ -173,8 +172,6 @@ namespace GroupCStegafy.View
                 this.viewModel.SetEncryptionType(EncryptionType.Unencrypted);
                 this.determineSettingsToDisplay();
             }
-
-            //TODO hook this up to do it when encryption type changed
         }
 
         private void EncryptedRadioButton_Checked(object sender, RoutedEventArgs e)
@@ -184,11 +181,9 @@ namespace GroupCStegafy.View
                 this.viewModel.SetEncryptionType(EncryptionType.Encrypted);
                 this.determineSettingsToDisplay();
             }
-
-            //TODO hook this up to do it when encryption type changed
         }
 
-        private async void EncryptedTextRadioButton_Checked(object sender, RoutedEventArgs e)
+        private void EncryptedTextRadioButton_Checked(object sender, RoutedEventArgs e)
         {
             if (this.viewModel != null)
             {
@@ -201,20 +196,24 @@ namespace GroupCStegafy.View
                 }
                 else
                 {
-                    using (var writeStream = this.ExtractedPicture.ModifiedImage.PixelBuffer.AsStream())
-                    {
-                        await writeStream.WriteAsync(this.ExtractedPicture.Pixels, 0,
-                            this.ExtractedPicture.Pixels.Length);
-                        this.extractedImage.Source = this.ExtractedPicture.ModifiedImage;
-                    }
-
+                    this.writePictureToImage(this.ExtractedPicture, this.extractedImage);
                     this.recentImage.Source = this.ExtractedPicture.ModifiedImage;
                     this.switchRecentDisplayToImage();
                 }
             }
         }
 
-        private async void DecryptedTextRadioButton_Checked(object sender, RoutedEventArgs e)
+        private async void writePictureToImage(Picture picture, Image image)
+        {
+            using (var writeStream = picture.ModifiedImage.PixelBuffer.AsStream())
+            {
+                await writeStream.WriteAsync(picture.Pixels, 0,
+                    picture.Pixels.Length);
+                image.Source = picture.ModifiedImage;
+            }
+        }
+
+        private void DecryptedTextRadioButton_Checked(object sender, RoutedEventArgs e)
         {
             if (this.viewModel != null)
             {
@@ -229,12 +228,7 @@ namespace GroupCStegafy.View
                 else
                 {
                     this.viewModel.DecryptImage();
-                    using (var writeStream = this.DecryptedPicture.ModifiedImage.PixelBuffer.AsStream())
-                    {
-                        await writeStream.WriteAsync(this.DecryptedPicture.Pixels, 0,
-                            this.DecryptedPicture.Pixels.Length);
-                        this.extractedImage.Source = this.DecryptedPicture.ModifiedImage;
-                    }
+                    this.writePictureToImage(this.DecryptedPicture, this.extractedImage);
 
                     this.recentImage.Source = this.DecryptedPicture.ModifiedImage;
                     this.switchRecentDisplayToImage();
@@ -247,12 +241,7 @@ namespace GroupCStegafy.View
             this.viewModel.SetEncryptionKeyword(this.keywordTextBox.Text);
             if (await this.viewModel.EmbedFile())
             {
-                using (var writeStream = this.EmbeddedPicture.ModifiedImage.PixelBuffer.AsStream())
-                {
-                    await writeStream.WriteAsync(this.EmbeddedPicture.Pixels, 0, this.EmbeddedPicture.Pixels.Length);
-                    this.embeddedImage.Source = this.EmbeddedPicture.ModifiedImage;
-                }
-
+                this.writePictureToImage(this.EmbeddedPicture, this.embeddedImage);
                 this.updateRecentImageTextColor(this.embeddedTextBlock);
                 this.showExtractUi();
                 this.hideAllSettings();
@@ -275,17 +264,12 @@ namespace GroupCStegafy.View
             }
         }
 
-        private async void ExtractButton_Click(object sender, RoutedEventArgs e)
+        private void ExtractButton_Click(object sender, RoutedEventArgs e)
         {
             this.viewModel.ExtractFile();
             if (this.HiddenFileType == FileType.Picture)
             {
-                using (var writeStream = this.ExtractedPicture.ModifiedImage.PixelBuffer.AsStream())
-                {
-                    await writeStream.WriteAsync(this.ExtractedPicture.Pixels, 0, this.ExtractedPicture.Pixels.Length);
-                    this.extractedImage.Source = this.ExtractedPicture.ModifiedImage;
-                }
-
+                this.writePictureToImage(this.ExtractedPicture, this.extractedImage);
                 this.recentImage.Source = this.ExtractedPicture.ModifiedImage;
             }
             else
@@ -304,12 +288,7 @@ namespace GroupCStegafy.View
         {
             if (await this.viewModel.OpenSourceImage())
             {
-                using (var writeStream = this.SourcePicture.ModifiedImage.PixelBuffer.AsStream())
-                {
-                    await writeStream.WriteAsync(this.SourcePicture.Pixels, 0, this.SourcePicture.Pixels.Length);
-                    this.sourceImage.Source = this.SourcePicture.ModifiedImage;
-                }
-
+                this.writePictureToImage(this.SourcePicture, this.sourceImage);
                 this.recentImage.Source = this.SourcePicture.ModifiedImage;
                 return true;
             }
@@ -319,43 +298,31 @@ namespace GroupCStegafy.View
 
         private async Task<bool> openHiddenPicture()
         {
-            if (await this.viewModel.OpenHiddenFile())
+            if (!await this.viewModel.OpenHiddenFile())
             {
-                if (this.HiddenFileType == FileType.Text)
-                {
-                    this.hiddenTextBox.Text = this.HiddenText;
-                    this.recentTextBox.Text = this.HiddenText;
-                    this.switchToTextMode();
-                    this.showTextOverlays();
-                    return true;
-                }
-
-                using (var writeStream = this.HiddenPicture.ModifiedImage.PixelBuffer.AsStream())
-                {
-                    await writeStream.WriteAsync(this.HiddenPicture.Pixels, 0, this.HiddenPicture.Pixels.Length);
-                    this.hiddenImage.Source = this.HiddenPicture.ModifiedImage;
-                }
-
-                this.recentImage.Source = this.HiddenPicture.ModifiedImage;
-                this.switchToImageMode();
-                this.hideTextOverlays();
-
+                return false;
+            }
+            if (this.HiddenFileType == FileType.Text)
+            {
+                this.hiddenTextBox.Text = this.HiddenText;
+                this.recentTextBox.Text = this.HiddenText;
+                this.switchToTextMode();
+                this.showTextOverlays();
                 return true;
             }
 
-            return false;
+            this.writePictureToImage(this.HiddenPicture, this.hiddenImage);
+            this.recentImage.Source = this.HiddenPicture.ModifiedImage;
+            this.switchToImageMode();
+            this.hideTextOverlays();
+
+            return true;
         }
 
         private async Task openDraggedSourceImage(DragEventArgs dragEvent)
         {
             await this.viewModel.OpenDraggedFile(dragEvent, this.SourcePicture);
-
-            using (var writeStream = this.SourcePicture.ModifiedImage.PixelBuffer.AsStream())
-            {
-                await writeStream.WriteAsync(this.SourcePicture.Pixels, 0, this.SourcePicture.Pixels.Length);
-                this.sourceImage.Source = this.SourcePicture.ModifiedImage;
-            }
-
+            this.writePictureToImage(this.SourcePicture, this.sourceImage);
             this.recentImage.Source = this.SourcePicture.ModifiedImage;
         }
 
@@ -363,12 +330,7 @@ namespace GroupCStegafy.View
         {
             if (await this.viewModel.OpenDraggedFile(dragEvent, this.HiddenPicture))
             {
-                using (var writeStream = this.HiddenPicture.ModifiedImage.PixelBuffer.AsStream())
-                {
-                    await writeStream.WriteAsync(this.HiddenPicture.Pixels, 0, this.HiddenPicture.Pixels.Length);
-                    this.hiddenImage.Source = this.HiddenPicture.ModifiedImage;
-                }
-
+                this.writePictureToImage(this.HiddenPicture, this.hiddenImage);
                 this.recentImage.Source = this.HiddenPicture.ModifiedImage;
                 this.switchToImageMode();
                 this.hideTextOverlays();
@@ -842,11 +804,6 @@ namespace GroupCStegafy.View
             //TODO add abstract triangulation art page
         }
 
-        private void PaintByNumberGenerator_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            //TODO add paint by number generator page
-        }
-
         private async void SaveSymbol_Tapped(object sender, TappedRoutedEventArgs e)
         {
             if (this.recentImage.Source != null)
@@ -871,6 +828,8 @@ namespace GroupCStegafy.View
 
         private void resetView()
         {
+            this.resetRadioButtonsToDefault();
+            this.resetEmbeddingSettingsToDefault();
             this.showDropArea();
             this.hideAllSettings();
             this.hideExtractUi();
@@ -882,6 +841,20 @@ namespace GroupCStegafy.View
             this.hideEncryptionKeywordSettings();
             this.switchToImageMode();
             this.switchRecentDisplayToImage();
+        }
+
+        private void resetEmbeddingSettingsToDefault()
+        {
+            this.bpccSlider.Value = 1;
+            this.keywordTextBox.Text = string.Empty;
+        }
+
+        private void resetRadioButtonsToDefault()
+        {
+            this.encryptedRadioButton.IsChecked = true;
+            this.encryptedTextRadioButton.IsChecked = true;
+            this.decryptedTextRadioButton.IsChecked = false;
+            this.unencryptedRadioButton.IsChecked = false;
         }
 
         private void resetImages()

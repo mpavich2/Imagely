@@ -83,7 +83,7 @@ namespace GroupCStegafy.Model.Filters
         {
             var sourcePixelColor =
                 Color.FromArgb(this.maxRgbValue, this.minRgbValue, this.minRgbValue, this.minRgbValue);
-            PixelManager.SetPixelBgra8(this.sourcePicture.Pixels, j, i, sourcePixelColor,
+            PixelUtilities.SetPixelBgra8(this.sourcePicture.Pixels, j, i, sourcePixelColor,
                 this.sourcePicture.Width, this.sourcePicture.Height);
         }
 
@@ -91,7 +91,7 @@ namespace GroupCStegafy.Model.Filters
         {
             var sourcePixelColor =
                 Color.FromArgb(this.maxRgbValue, this.maxRgbValue, this.maxRgbValue, this.maxRgbValue);
-            PixelManager.SetPixelBgra8(this.sourcePicture.Pixels, j, i, sourcePixelColor,
+            PixelUtilities.SetPixelBgra8(this.sourcePicture.Pixels, j, i, sourcePixelColor,
                 this.sourcePicture.Width, this.sourcePicture.Height);
         }
 
@@ -131,7 +131,7 @@ namespace GroupCStegafy.Model.Filters
             {
                 for (var j = 0; j < this.sourcePicture.Height - 1; j++)
                 {
-                    var sourcePixelColor = PixelManager.GetPixelBgra8(this.sourcePicture.Pixels, j, i,
+                    var sourcePixelColor = PixelUtilities.GetPixelBgra8(this.sourcePicture.Pixels, j, i,
                         this.sourcePicture.Width,
                         this.sourcePicture.Height);
                     allPixR[i, j] = sourcePixelColor.R;
