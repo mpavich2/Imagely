@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
@@ -131,12 +132,6 @@ namespace GroupCStegafy.View
             this.updateRecentImageTextColor(this.triangulationImageTextBlock);
         }
 
-        private void drawAbstractTriangleArt()
-        {
-            //TODO: eventually move into own class to create random abstract triangle art
-            this.viewModel.DrawAbstractTriangleArt(this.triangulationCanvas, this.pointsTextBox.Text);
-        }
-
         private async void FileDropArea_Drop(object sender, DragEventArgs dragEvent)
         {
             if (!await this.openImage(dragEvent) && this.sourceImage.Source == null)
@@ -257,12 +252,12 @@ namespace GroupCStegafy.View
 
         private void Steganography_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            Frame.Navigate(typeof(StegafyPage));
+            Frame.Navigate(typeof(SteganographyPage));
         }
 
         private void AbstractTriangulationArt_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            //TODO add abstract triangulation art page
+            Frame.Navigate(typeof(AbstractTriangulationPage));
         }
 
         private void showReadyTextAndPointsBox()
@@ -444,5 +439,10 @@ namespace GroupCStegafy.View
         }
 
         #endregion
+
+        private void pointsTextBox_OnBeforeTextChanging(TextBox sender, TextBoxBeforeTextChangingEventArgs args)
+        {
+            args.Cancel = args.NewText.Any(c => !char.IsDigit(c));
+        }
     }
 }

@@ -15,9 +15,9 @@ using GroupCStegafy.Viewmodel;
 namespace GroupCStegafy.View
 {
     /// <summary>
-    ///     Defines the StegafyPage class.
+    ///     Defines the steganography page class.
     /// </summary>
-    public sealed partial class StegafyPage
+    public sealed partial class SteganographyPage
     {
         #region Data members
 
@@ -36,7 +36,7 @@ namespace GroupCStegafy.View
         private const string EmbedImageDisplay = "Embed Image";
         private const string ExtractImageDisplay = "Extract Image";
 
-        private readonly StegafyPageViewModel viewModel;
+        private readonly SteganographyPageViewModel viewModel;
         private readonly TextBlock[] textBlocks;
         private ImageType recentImageType;
 
@@ -61,12 +61,12 @@ namespace GroupCStegafy.View
         #region Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="StegafyPage" /> class.
+        ///     Initializes a new instance of the <see cref="SteganographyPage" /> class.
         /// </summary>
-        public StegafyPage()
+        public SteganographyPage()
         {
             this.InitializeComponent();
-            this.viewModel = new StegafyPageViewModel();
+            this.viewModel = new SteganographyPageViewModel();
             this.textBlocks = new[] {
                 this.sourceTextBlock, this.hiddenTextBlock, this.embeddedTextBlock, this.extractedTextBlock
             };
@@ -801,12 +801,12 @@ namespace GroupCStegafy.View
 
         private void Steganography_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            Frame.Navigate(typeof(StegafyPage));
+            Frame.Navigate(typeof(SteganographyPage));
         }
 
         private void AbstractTriangulationArt_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            //TODO add abstract triangulation art page
+            Frame.Navigate(typeof(AbstractTriangulationPage));
         }
 
         private async void SaveSymbol_Tapped(object sender, TappedRoutedEventArgs e)

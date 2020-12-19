@@ -138,13 +138,21 @@
     <Compile Include="Model\Filters\GrayscaleFilter.cs" />
     <Compile Include="Model\Filters\SobelFilter.cs" />
     <Compile Include="Model\HeaderManager.cs" />
+    <Compile Include="Model\NamedColor.cs" />
     <Compile Include="Model\Picture.cs" />
     <Compile Include="Utils\FileUtilities.cs" />
     <Compile Include="Utils\PictureUtilities.cs" />
     <Compile Include="Utils\PixelUtilities.cs" />
     <Compile Include="Utils\StringExtensions.cs" />
-    <Compile Include="Viewmodel\StegafyPageViewModel.cs" />
+    <Compile Include="Viewmodel\AbstractTriangulationPageViewModel.cs" />
+    <Compile Include="Viewmodel\SteganographyPageViewModel.cs" />
     <Compile Include="Viewmodel\TriangulationPageViewModel.cs" />
+    <Compile Include="View\AbstractTriangulationPage.xaml.cs">
+      <DependentUpon>AbstractTriangulationPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\Dialogs\AddNewColorDialog.xaml.cs">
+      <DependentUpon>AddNewColorDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\Dialogs\DivideByZeroDialog.xaml.cs">
       <DependentUpon>DivideByZeroDialog.xaml</DependentUpon>
     </Compile>
@@ -163,8 +171,8 @@
     <Compile Include="View\Dialogs\InvalidMessageLengthDialog.xaml.cs">
       <DependentUpon>InvalidMessageLengthDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\StegafyPage.xaml.cs">
-      <DependentUpon>StegafyPage.xaml</DependentUpon>
+    <Compile Include="View\SteganographyPage.xaml.cs">
+      <DependentUpon>SteganographyPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\TriangulationPage.xaml.cs">
       <DependentUpon>TriangulationPage.xaml</DependentUpon>
@@ -186,6 +194,7 @@
     <Content Include="Assets\LargeTile.scale-150.png" />
     <Content Include="Assets\LargeTile.scale-200.png" />
     <Content Include="Assets\LargeTile.scale-400.png" />
+    <Content Include="Assets\paintDrop.svg" />
     <Content Include="Assets\sad.svg" />
     <Content Include="Assets\SampleTriangulation1.png" />
     <Content Include="Assets\SampleTriangulation2.png" />
@@ -244,6 +253,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="View\AbstractTriangulationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\Dialogs\AddNewColorDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\Dialogs\DivideByZeroDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -268,7 +285,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\StegafyPage.xaml">
+    <Page Include="View\SteganographyPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

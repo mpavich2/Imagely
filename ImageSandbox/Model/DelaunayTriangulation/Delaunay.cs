@@ -27,7 +27,7 @@ namespace GroupCStegafy.Model.DelaunayTriangulation
         #region Methods
 
         /// <summary>
-        ///     Generates the points.
+        ///     Generates the points for the triangles.
         /// </summary>
         /// <param name="sourcePicture">The source picture.</param>
         /// <param name="amount">The amount.</param>
@@ -60,6 +60,32 @@ namespace GroupCStegafy.Model.DelaunayTriangulation
                 var randomIndex = random.Next(whitePoints.Count());
                 points.Add(whitePoints.ElementAt(randomIndex));
                 whitePoints.RemoveAt(randomIndex);
+            }
+
+            return points;
+        }
+
+        /// <summary>
+        /// Generates the random points for the triangles.
+        /// </summary>
+        /// <param name="picture">The picture.</param>
+        /// <param name="amount">The amount.</param>
+        /// <param name="maxX">The maximum x.</param>
+        /// <param name="maxY">The maximum y.</param>
+        /// <returns></returns>
+        public IEnumerable<Point> GenerateRandomPoints(Picture picture, int amount, double maxX, double maxY)
+        {
+            this.MaxX = maxX;
+            this.MaxY = maxY;
+
+            var points = this.setupPoints();
+            var random = new Random();
+
+            for (var i = 0; i < amount - 4; i++)
+            {
+                var pointX = random.NextDouble() * this.MaxX;
+                var pointY = random.NextDouble() * this.MaxY;
+                points.Add(new Point(pointX, pointY));
             }
 
             return points;

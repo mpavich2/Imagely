@@ -161,46 +161,6 @@ namespace GroupCStegafy.Viewmodel
             }
         }
 
-        /// <summary>
-        ///     Draws the abstract triangle art.
-        /// </summary>
-        /// <param name="canvas">The canvas.</param>
-        /// <param name="pointsText">The points text.</param>
-        public void DrawAbstractTriangleArt(Canvas canvas, string pointsText)
-        {
-            //TODO move this to the abstract triangulation page when it is created
-            var pointCount = int.Parse(pointsText);
-            var points = this.delaunay.GeneratePoints(this.CopiedPicture, pointCount, this.CopiedPicture.Width,
-                this.CopiedPicture.Height);
-
-            var triangulation = this.delaunay.BowyerWatson(points);
-            foreach (var triangle in triangulation)
-            {
-                var polygon = new Polygon();
-                var point1 = new Point(triangle.Vertices[0].X, triangle.Vertices[0].Y);
-                var point2 = new Point(triangle.Vertices[1].X, triangle.Vertices[1].Y);
-                var point3 = new Point(triangle.Vertices[2].X, triangle.Vertices[2].Y);
-                if (polygon.Points != null)
-                {
-                    polygon.Points.Add(point1);
-                    polygon.Points.Add(point2);
-                    polygon.Points.Add(point3);
-                }
-
-                var rnd = new Random();
-                var b = new byte[3];
-                rnd.NextBytes(b);
-                var color = Color.FromArgb(255, b[0], b[1], b[2]);
-
-                Brush brush = new SolidColorBrush(color);
-
-                polygon.Fill = brush;
-                polygon.Stroke = brush;
-                polygon.StrokeThickness = 1.0;
-                canvas.Children.Add(polygon);
-            }
-        }
-
         private async Task<bool> isFileValid(StorageFile file)
         {
             if (file == null)

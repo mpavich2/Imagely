@@ -26,7 +26,7 @@ namespace GroupCStegafy.View
 
         private void steganographyTextBlock_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            Frame.Navigate(typeof(StegafyPage));
+            Frame.Navigate(typeof(SteganographyPage));
         }
 
         private void imageTriangulationTextBlock_Tapped(object sender, TappedRoutedEventArgs e)
@@ -36,7 +36,7 @@ namespace GroupCStegafy.View
 
         private void abstractTriangulationTextBlock_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            //TODO: naviagate to abstract triangulation page
+            Frame.Navigate(typeof(AbstractTriangulationPage));
         }
 
         private void steganographyTextBlock_OnPointerEntered(object sender, PointerRoutedEventArgs e)

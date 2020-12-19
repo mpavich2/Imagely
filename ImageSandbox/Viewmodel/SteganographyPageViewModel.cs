@@ -19,7 +19,7 @@ namespace GroupCStegafy.Viewmodel
     /// <summary>
     ///     Defines the StegafyPageViewModel class.
     /// </summary>
-    public class StegafyPageViewModel
+    public class SteganographyPageViewModel
     {
         #region Data members
 
@@ -136,9 +136,9 @@ namespace GroupCStegafy.Viewmodel
         #region Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="StegafyPageViewModel" /> class.
+        ///     Initializes a new instance of the <see cref="SteganographyPageViewModel" /> class.
         /// </summary>
-        public StegafyPageViewModel()
+        public SteganographyPageViewModel()
         {
             this.SourcePicture = new Picture();
             this.HiddenPicture = new Picture();
