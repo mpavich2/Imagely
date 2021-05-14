@@ -1,0 +1,94 @@
+﻿<Page
+    x:Class="Imagely.View.AbstractCirclePackingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Imagely.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="using:Imagely.Model"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Background="#FF212529" Margin="0,0,0,-8">
+        <Rectangle Fill="#FF212529" Margin="0,-21,362,980"/>
+        <Rectangle Fill="#FF212529" Margin="0,1008,362,-49"/>
+        <Canvas x:Name="triangulationCanvas" HorizontalAlignment="Left" VerticalAlignment="Top" Width="1796" Height="736" Margin="78,46,0,0">
+            <Canvas.Clip>
+                <RectangleGeometry x:Name="canvasBoundaryRect"/>
+            </Canvas.Clip>
+        </Canvas>
+        <Rectangle Fill="#FF272B2F" Margin="78,46,0,0" Height="736" HorizontalAlignment="Left" VerticalAlignment="Top" Width="1794" />
+        <Border BorderThickness="1" BorderBrush="{StaticResource BorderColor}" HorizontalAlignment="Left" VerticalAlignment="Top"
+                Margin="78,46,0,0">
+            <Image x:Name="recentImage" HorizontalAlignment="Center" Height="736" VerticalAlignment="Center" Width="1794" Visibility="Visible"/>
+        </Border>
+        <Border BorderThickness="1" BorderBrush="{StaticResource BorderColor}" HorizontalAlignment="Left" VerticalAlignment="Top"
+                Margin="78,826,0,0">
+            <StackPanel Width="1794" Height="200" Background="#FF272B2F"/>
+        </Border>
+        <TextBox x:Name="circleAmountTextBox" Background="#FF2D3136" FontFamily="{StaticResource TahomaFont}" Foreground="{StaticResource DefaultTextColor}" HorizontalAlignment="Left" Margin="583,911,0,0" Text="5000" TextWrapping="Wrap" VerticalAlignment="Top" Width="156" Height="32" BeforeTextChanging="pointsTextBox_OnBeforeTextChanging"/>
+        <SymbolIcon x:Name="saveSymbol" Symbol="Save" Height="20" Width="20" Margin="1844,867,0,0" Foreground="{StaticResource SymbolColor}" Tapped="SaveSymbol_Tapped" VerticalAlignment="Top" HorizontalAlignment="Left" PointerEntered="SaveSymbol_PointerEntered" PointerExited="SaveSymbol_PointerExited"/>
+        <SymbolIcon x:Name="clearSymbol" Symbol="Clear" Height="20" Width="20" Margin="1844,837,0,0" Foreground="{StaticResource SymbolColor}" Tapped="ClearSymbol_Tapped" VerticalAlignment="Top" HorizontalAlignment="Left" PointerEntered="ClearSymbol_PointerEntered" PointerExited="ClearSymbol_PointerExited"/>
+        <Button x:Name="drawCirclePacking" Content="Draw Circle Packing" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Margin="896,912,0,0" VerticalAlignment="Top" Click="drawCirclePackingButton_Click"/>
+        <TextBlock HorizontalAlignment="Left" Margin="78,-7,0,0" Text="Abstract Circle Packing" FontFamily="{StaticResource TahomaFont}" FontSize="40" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="414,910,0,0" Text="Circle Amount:" TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="{StaticResource TahomaFont}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}"/>
+        <TextBlock HorizontalAlignment="Left" Margin="1213,831,0,0" Text="Circle Colors" TextWrapping="Wrap" VerticalAlignment="Top" FontFamily="{StaticResource TahomaFont}" FontSize="22" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}"/>
+        <ListView x:Name="colorsListView" Margin="1213,858,518,30" BorderBrush="{StaticResource BorderColor}" BorderThickness="1" SelectionChanged="colorsListView_OnSelectionChanged">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="model:NamedColor">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition MinWidth="54"/>
+                            <ColumnDefinition Width="32"/>
+                            <ColumnDefinition Width="32"/>
+                            <ColumnDefinition Width="32"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Rectangle Width="44" Height="44" Fill="{x:Bind Brush}" Grid.RowSpan="2"/>
+                        <TextBlock Text="{x:Bind Name}" Grid.Column="1" Grid.ColumnSpan="4"/>
+                        <TextBlock Text="{x:Bind Color.R}" Grid.Column="1" Grid.Row="1" Foreground="Red"/>
+                        <TextBlock Text="{x:Bind Color.G}" Grid.Column="2" Grid.Row="1" Foreground="Green"/>
+                        <TextBlock Text="{x:Bind Color.B}" Grid.Column="3" Grid.Row="1" Foreground="Blue"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Button x:Name="addColorButton" Content="Add Color" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Margin="1422,858,0,0" VerticalAlignment="Top" Width="151" Click="addColorButton_Click"/>
+        <Button x:Name="addRandomColorButton" Content="Add Random Color" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Margin="1422,903,0,0" VerticalAlignment="Top" Click="addRandomColorButton_Click"/>
+        <Button x:Name="removeColorButton" Content="Remove Color" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Margin="1422,946,0,0" VerticalAlignment="Top" Width="151" IsEnabled="False" Click="removeColorButton_Click"/>
+        <Button x:Name="clearColorsButton" Content="Clear Colors" FontFamily="{StaticResource TahomaFont}" FontWeight="Bold" Margin="1422,988,0,0" VerticalAlignment="Top" Width="151" IsEnabled="False" Click="clearColorsButton_Click"/>
+        <CheckBox x:Name="maxAmountCheckBox" Checked="MaxAmountCheckBox_OnChecked" Unchecked="MaxAmountCheckBox_OnUnchecked" Content="Max Amount" Margin="414,944,0,0" VerticalAlignment="Top" RequestedTheme="Dark" FontFamily="{StaticResource TahomaFont}" FontSize="17" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}"/>
+        <CheckBox x:Name="randomColorsCheckBox" Checked="RandomColorsCheckBox_OnChecked" Unchecked="RandomColorsCheckBox_OnUnchecked" IsChecked="True" Content="Randomize Colors" Margin="1621,905,0,0" VerticalAlignment="Top" RequestedTheme="Dark" FontFamily="{StaticResource TahomaFont}" FontSize="17" FontWeight="Bold" Foreground="{StaticResource DefaultTextColor}"/>
+        <ProgressRing x:Name="progressRing" Foreground="White" HorizontalAlignment="Left" Margin="89,837,0,0" VerticalAlignment="Top" Height="30" Width="30"/>
+        <NavigationView x:Name="navigationView" Loaded="NavigationView_Loaded" BackRequested="navigationView_OnBackRequested">
+            <NavigationView.MenuItems>
+                <NavigationViewItem Icon="Home" Content="Home" Tapped="Home_Tapped" />
+                <NavigationViewItem Content="Image Triangulation Art" Tapped="ImageTriangulationArt_Tapped" >
+                    <NavigationViewItem.Icon>
+                        <PathIcon Data="M245,33.299L0,456.701h245h245L245,33.299z M432.077,419.731L245,299.421l0-202.992L432.077,419.731z" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Icon="Pictures" Content="Steganography" Tapped="Steganography_Tapped" />
+                <NavigationViewItem Content="Abstract Triangulation Art" Tapped="AbstractTriangulationArt_Tapped" >
+                    <NavigationViewItem.Icon>
+                        <PathIcon Data="M245,33.299L0,456.701h245h245L245,33.299z M432.077,419.731L245,299.421l0-202.992L432.077,419.731z" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Abstract Circle" Tapped="AbstractCircle_Tapped">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEA3B;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem Content="Circle Packing" Tapped="CirclePacking_Tapped">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xEA3B;"/>
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+        </NavigationView>
+    </Grid>
+</Page>
